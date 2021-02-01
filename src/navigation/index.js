@@ -3,14 +3,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Tables, Orders, Products} from '../screens';
-import {Pressable, Text} from 'react-native';
-import SQLite from 'react-native-sqlite-storage';
-
-const db = SQLite.openDatabase({
-  name: 'SQLite.db',
-  location: 'default',
-  createFromLocation: '~SQLite.db',
-});
+import {Theme} from '../constants';
+import LogoTitle from '../components/LogoTitle';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +13,25 @@ const TablesStack = createStackNavigator();
 function TablesStackScreen() {
   return (
     <TablesStack.Navigator>
-      <TablesStack.Screen name="Mesas" component={Tables} />
+      <TablesStack.Screen
+        name="Mesas"
+        component={Tables}
+        options={{
+          headerLeft: () => <LogoTitle />,
+          headerRightContainerStyle: {paddingRight: 20},
+          headerLeftContainerStyle: {paddingLeft: 20},
+          headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: Theme.COLORS.PRIMARY,
+            height: 80,
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontFamily: Theme.FONT.FAMILY,
+            fontSize: 40,
+          },
+        }}
+      />
     </TablesStack.Navigator>
   );
 }

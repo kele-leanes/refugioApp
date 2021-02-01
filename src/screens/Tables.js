@@ -4,14 +4,16 @@ import {
   FlatList,
   Text,
   View,
-  Button,
   Modal,
   TouchableHighlight,
   StyleSheet,
   TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import SQLite from 'react-native-sqlite-storage';
 import TableItem from '../components/TableItem';
+import ScreenContainer from '../components/ScreenContainer';
+import {Theme} from './../constants';
 
 const db = SQLite.openDatabase({
   name: 'SQLite.db',
@@ -60,10 +62,9 @@ export default function Tables({navigation}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button
-          onPress={() => setModalVisible(!modalVisible)}
-          title="Crear Mesa"
-        />
+        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+          <Text style={{...styles.textStyle, fontSize: 40}}>+</Text>
+        </TouchableOpacity>
       ),
     });
   }, [navigation, setModalVisible]);
@@ -103,16 +104,19 @@ export default function Tables({navigation}) {
     );
   };
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <ScreenContainer>
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>NUEVA MESA</Text>
-            <Text>Nombre: </Text>
-            <TextInput
-              value={tableName}
-              onChangeText={(text) => setTableName(text)}
-            />
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Nombre: </Text>
+              <TextInput
+                style={styles.input}
+                value={tableName}
+                onChangeText={(text) => setTableName(text)}
+              />
+            </View>
             <TouchableHighlight
               style={{...styles.openButton, backgroundColor: '#2196F3'}}
               onPress={() => {
@@ -131,7 +135,7 @@ export default function Tables({navigation}) {
         ItemSeparatorComponent={Separator}
         keyExtractor={(item) => item.id.toString()}
       />
-    </View>
+    </ScreenContainer>
   );
 }
 
@@ -140,14 +144,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
   },
   modalView: {
-    margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: Theme.COLORS.SECONDARY,
     borderRadius: 20,
     padding: 100,
-    alignItems: 'center',
+    justifyContent: 'space-between',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -172,5 +174,22 @@ const styles = StyleSheet.create({
     fontSize: 40,
     marginBottom: 15,
     textAlign: 'center',
+    fontFamily: Theme.FONT.FAMILY,
+    color: Theme.COLORS.WHITE,
+  },
+  inputContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 20,
+  },
+  input: {
+    width: '20%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 15,
+    height: 40,
   },
 });

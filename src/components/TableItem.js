@@ -1,11 +1,15 @@
 import React from 'react';
 import {Button, Text, View, StyleSheet} from 'react-native';
+import {Theme} from '../constants';
 
 const TableItem = (props) => {
   const {id, name, isOpen, deleteTable} = props;
   return (
     <View
-      style={{...styles.container, backgroundColor: isOpen ? '#a63632' : '#32a852'}}>
+      style={{
+        ...styles.container,
+        backgroundColor: isOpen ? Theme.COLORS.ERROR : Theme.COLORS.SUCCESS,
+      }}>
       <View>
         <Text>Mesa: {name}</Text>
       </View>

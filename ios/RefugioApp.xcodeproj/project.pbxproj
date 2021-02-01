@@ -20,6 +20,9 @@
 		7572FBE81BC79601AF172D38 /* libPods-RefugioApp-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3D80904C7FAFD5852064C6 /* libPods-RefugioApp-tvOSTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9F9A815D50948E16750C2632 /* libPods-RefugioApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 47ED11FFA38F007CBDF25178 /* libPods-RefugioApp.a */; };
+		19F635F074E04112ADB8344D /* Bebas Neue.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B69CC66A72841B89076BFAA /* Bebas Neue.ttf */; };
+		CDCE8F1F44E04020BA4C23CA /* BebasNeue Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 128A82047B78422C9B702253 /* BebasNeue Regular.otf */; };
+		C21B803D668D4959852E8044 /* BebasNeue.otf in Resources */ = {isa = PBXBuildFile; fileRef = 468BB68DACA14C37BB6940E1 /* BebasNeue.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +70,9 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F2B9DA5C32DA894EF487FC8A /* Pods-RefugioApp-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RefugioApp-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-RefugioApp-tvOSTests/Pods-RefugioApp-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		2B69CC66A72841B89076BFAA /* Bebas Neue.ttf */ = {isa = PBXFileReference; name = "Bebas Neue.ttf"; path = "../src/assets/fonts/Bebas Neue.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		128A82047B78422C9B702253 /* BebasNeue Regular.otf */ = {isa = PBXFileReference; name = "BebasNeue Regular.otf"; path = "../src/assets/fonts/BebasNeue Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		468BB68DACA14C37BB6940E1 /* BebasNeue.otf */ = {isa = PBXFileReference; name = "BebasNeue.otf"; path = "../src/assets/fonts/BebasNeue.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +187,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				585B6733BC9BC5CCAB607D05 /* Pods */,
+				A84CAD6CA63C46228CD93D33 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -197,6 +204,17 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		A84CAD6CA63C46228CD93D33 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				2B69CC66A72841B89076BFAA /* Bebas Neue.ttf */,
+				128A82047B78422C9B702253 /* BebasNeue Regular.otf */,
+				468BB68DACA14C37BB6940E1 /* BebasNeue.otf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -342,6 +360,9 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				19F635F074E04112ADB8344D /* Bebas Neue.ttf in Resources */,
+				CDCE8F1F44E04020BA4C23CA /* BebasNeue Regular.otf in Resources */,
+				C21B803D668D4959852E8044 /* BebasNeue.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
