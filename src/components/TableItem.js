@@ -55,10 +55,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flex: 1,
+    maxWidth: '49%',
     height: 80,
     alignItems: 'center',
     padding: 10,
-    margin: 5,
     borderWidth: 1,
     borderColor: Theme.COLORS.SECONDARY,
     borderRadius: 5,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    width: '30%',
+    width: '50%',
     justifyContent: 'space-around',
   },
   title: {

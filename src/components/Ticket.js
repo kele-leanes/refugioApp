@@ -1,10 +1,30 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Text, FlatList, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {Theme} from '../constants';
 import Button from './Button';
+import PrintTicketModal from './PrintTicketModal';
+import moment from 'moment';
 
-function Ticket({orderProducts, deleteProductFromOrder}) {
+function Ticket({orderProducts, deleteProductFromOrder, orderData}) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [productsToPrint, setProductsToPrint] = useState();
+  const [order, setOrder] = useState({date: '', table_name: ''});
+
+  const _onClose = () => {
+    setModalVisible(!modalVisible);
+  };
+
+  useEffect(() => {
+    if (orderData) {
+      setOrder({
+        ...order,
+        date: moment(+orderData.order_date).format('DD/MM/YYYY'),
+        table_name: orderData.table_name,
+      });
+    }
+  }, [orderData]);
+
   const renderItem = ({item}) => {
     return (
       <View style={styles.productRow}>
@@ -37,11 +57,20 @@ function Ticket({orderProducts, deleteProductFromOrder}) {
     return total.toFixed(2);
   };
 
+  const openPrintModal = (type) => {
+    setModalVisible(true);
+    setProductsToPrint(orderProducts.filter((elem) => elem.type_name === type));
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>EL REFUGIO</Text>
         <Text style={styles.subTitle}>BAR SERRANO</Text>
+      </View>
+      <View style={styles.orderInfo}>
+        <Text>MESA: {order.table_name}</Text>
+        <Text>FECHA: {order.date}</Text>
       </View>
       <View style={styles.topRow}>
         <View style={styles.oneCell}>
@@ -73,11 +102,13 @@ function Ticket({orderProducts, deleteProductFromOrder}) {
           title={'parrilla'}
           icon={'printer'}
           color={Theme.COLORS.SECONDARY}
+          onPress={() => openPrintModal('Parrilla')}
         />
         <Button
           title={'cocina'}
           icon={'printer'}
           color={Theme.COLORS.SECONDARY}
+          onPress={() => openPrintModal('Cocina')}
         />
         <Button
           title={'Cerrar mesa'}
@@ -85,6 +116,11 @@ function Ticket({orderProducts, deleteProductFromOrder}) {
           color={Theme.COLORS.SUCCESS}
         />
       </View>
+      <PrintTicketModal
+        visible={modalVisible}
+        onClose={_onClose}
+        orderProducts={productsToPrint}
+      />
     </View>
   );
 }
@@ -116,6 +152,12 @@ const styles = StyleSheet.create({
   },
   topRow: {
     backgroundColor: Theme.COLORS.SECONDARY,
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    padding: 5,
+  },
+  orderInfo: {
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',

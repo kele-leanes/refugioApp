@@ -109,6 +109,8 @@ export default function Tables({navigation}) {
         data={flatListItems}
         renderItem={RenderItem}
         style={{width: '100%'}}
+        numColumns={2}
+        columnWrapperStyle={{padding: 10, justifyContent: 'space-between'}}
         keyExtractor={(item) => item.id.toString()}
       />
     </ScreenContainer>

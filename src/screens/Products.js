@@ -1,5 +1,5 @@
 import React, {useState, useLayoutEffect, useEffect} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import Icon from 'react-native-vector-icons/Feather';
 import {Theme} from '../constants';
@@ -10,8 +10,8 @@ import {db} from '../services/dbService';
 
 export default function Products({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [productTypes, setProductTypes] = useState([]);
+  const [products, setProducts] = useState(null);
+  const [productTypes, setProductTypes] = useState(null);
 
   useEffect(() => {
     showProducts();
@@ -85,11 +85,19 @@ export default function Products({navigation}) {
       <View style={{height: 70, width: '100%'}}>
         <FilterCarousel data={productTypes} filterProducts={showProducts} />
       </View>
-      <ProductList
-        products={products}
-        hasButton
-        fetchProducts={() => showProducts()}
-      />
+      {products ? (
+        products.length > 0 ? (
+          <ProductList
+            products={products}
+            hasButton
+            fetchProducts={() => showProducts()}
+          />
+        ) : (
+          <Text>No hay productos disponibles</Text>
+        )
+      ) : (
+        <ActivityIndicator size={80} color={Theme.COLORS.WHITE} />
+      )}
       <AddProductModal
         visible={modalVisible}
         fetchProducts={() => showProducts()}
