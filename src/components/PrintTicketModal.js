@@ -86,7 +86,7 @@ const PrintTicketModal = ({visible, orderProducts, onClose}) => {
                 renderItem={printItem}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={ItemHeader}
-                style={{width: '50%'}}
+                style={{width: '50%', maxHeight: 400}}
               />
             ) : (
               <Text style={{color: Theme.COLORS.WHITE}}>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   modalView: {
     backgroundColor: Theme.COLORS.SECONDARY,
     borderRadius: 20,
-    padding: 100,
+    padding: 60,
     justifyContent: 'space-between',
     shadowColor: '#000',
     shadowOffset: {

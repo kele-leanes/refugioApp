@@ -15,7 +15,7 @@ export default function Tables({navigation}) {
   const showTables = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT tables.id, tables.table_name, tables.table_status, orders.id AS order_id  FROM tables LEFT JOIN orders ON tables.id = orders.table_id',
+        'SELECT tables.id, tables.table_name, orders.id AS order_id  FROM tables LEFT JOIN orders ON tables.id = orders.table_id',
         [],
         (tx, results) => {
           var temp = [];
@@ -58,23 +58,12 @@ export default function Tables({navigation}) {
   const openTable = (id) => {
     db.transaction(function (tx) {
       tx.executeSql(
-        'INSERT INTO orders (table_id, order_status, order_date) VALUES (?,?,?)',
-        [id, 'open', Date.now().toString()],
+        'INSERT INTO orders (table_id, order_date) VALUES (?,?)',
+        [id, Date.now()],
         (tx, results) => {
           if (results.rowsAffected > 0) {
             let orderId = results.insertId;
-            db.transaction(function (tx) {
-              tx.executeSql(
-                'UPDATE tables SET table_status=? WHERE id=?',
-                [1, id],
-                (tx, results) => {
-                  if (results.rowsAffected > 0) {
-                    navigation.navigate('Cargar orden', {id, orderId});
-                  }
-                },
-                (tx, error) => console.log('Error', error),
-              );
-            });
+            navigation.navigate('Cargar orden', {id, orderId});
           }
         },
         (tx, error) => {
@@ -90,7 +79,6 @@ export default function Tables({navigation}) {
         id={item.id}
         orderId={item.order_id}
         name={item.table_name}
-        isOpen={item.table_status}
         deleteTable={deleteTable}
         openTable={openTable}
         navigation={navigation}
@@ -110,7 +98,7 @@ export default function Tables({navigation}) {
         renderItem={RenderItem}
         style={{width: '100%'}}
         numColumns={2}
-        columnWrapperStyle={{padding: 10, justifyContent: 'space-between'}}
+        columnWrapperStyle={{padding: 5, justifyContent: 'space-around'}}
         keyExtractor={(item) => item.id.toString()}
       />
     </ScreenContainer>

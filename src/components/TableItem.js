@@ -3,26 +3,25 @@ import {Text, View, StyleSheet} from 'react-native';
 import {Theme} from '../constants';
 import Button from '../components/Button';
 
-const TableItem = (props) => {
-  const {id, orderId, name, isOpen, deleteTable, openTable, navigation} = props;
+const TableItem = ({id, orderId, name, deleteTable, openTable, navigation}) => {
   return (
     <View
       style={{
         ...styles.container,
-        backgroundColor: isOpen ? Theme.COLORS.ERROR : Theme.COLORS.SUCCESS,
+        backgroundColor: orderId ? Theme.COLORS.ERROR : Theme.COLORS.SUCCESS,
       }}>
       <View style={styles.textContainer}>
         <Text style={styles.title}>mesa: {name}</Text>
         <Text style={styles.subTitle}>{}</Text>
       </View>
-      {isOpen ? (
-        <View style={styles.buttonRow}>
-          <Button
+      {orderId ? (
+        <View style={{...styles.buttonRow, justifyContent: 'flex-end'}}>
+          {/* <Button
             title={'Cerrar'}
             onPress={() => console.log(id)}
             icon={'dollar-sign'}
             color={Theme.COLORS.SECONDARY}
-          />
+          /> */}
           <Button
             title={'Agegar'}
             onPress={() => navigation.navigate('Cargar orden', {id, orderId})}
@@ -73,8 +72,8 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    width: '50%',
-    justifyContent: 'space-around',
+    width: '60%',
+    justifyContent: 'space-between',
   },
   title: {
     fontFamily: Theme.FONT.FAMILY,

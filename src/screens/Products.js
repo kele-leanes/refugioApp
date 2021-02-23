@@ -1,5 +1,11 @@
 import React, {useState, useLayoutEffect, useEffect} from 'react';
-import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import Icon from 'react-native-vector-icons/Feather';
 import {Theme} from '../constants';
@@ -7,6 +13,7 @@ import AddProductModal from '../components/AddProductModal';
 import ProductList from '../components/ProductList';
 import FilterCarousel from '../components/FilterCarousel';
 import {db} from '../services/dbService';
+import {ThemeProvider} from '@react-navigation/native';
 
 export default function Products({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -81,7 +88,7 @@ export default function Products({navigation}) {
   }, [navigation]);
 
   return (
-    <ScreenContainer>
+    <ScreenContainer style={{flex: 1}}>
       <View style={{height: 70, width: '100%'}}>
         <FilterCarousel data={productTypes} filterProducts={showProducts} />
       </View>
@@ -93,7 +100,7 @@ export default function Products({navigation}) {
             fetchProducts={() => showProducts()}
           />
         ) : (
-          <Text>No hay productos disponibles</Text>
+          <Text style={styles.text}>No hay productos disponibles</Text>
         )
       ) : (
         <ActivityIndicator size={80} color={Theme.COLORS.WHITE} />
@@ -106,3 +113,10 @@ export default function Products({navigation}) {
     </ScreenContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    color: Theme.COLORS.WHITE,
+    fontFamily: Theme.FONT.FAMILY,
+  },
+});

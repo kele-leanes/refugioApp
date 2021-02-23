@@ -2,10 +2,11 @@ import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
-import {Tables, Orders, Products} from '../screens';
+import {Tables, Orders, Products, Summary} from '../screens';
 import {Theme} from '../constants';
 import LogoTitle from '../components/LogoTitle';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import BtPrinterSelector from '../components/BtPrinterSelector';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,6 +37,10 @@ function TablesStackScreen() {
         component={Orders}
         options={options}
       />
+      <TablesStack.Screen
+        name="Conectar impresora"
+        component={BtPrinterSelector}
+      />
     </TablesStack.Navigator>
   );
 }
@@ -54,6 +59,20 @@ function ProductsStackScreen() {
   );
 }
 
+const SummaryStack = createStackNavigator();
+
+function SummaryStackScreen() {
+  return (
+    <SummaryStack.Navigator>
+      <SummaryStack.Screen
+        name="Resumen"
+        component={Summary}
+        options={options}
+      />
+    </SummaryStack.Navigator>
+  );
+}
+
 export default function Navigation() {
   return (
     <NavigationContainer>
@@ -62,9 +81,11 @@ export default function Navigation() {
           tabBarIcon: ({focused, color, size}) => {
             let iconName;
             if (route.name === 'Mesas') {
-              iconName = focused ? 'table-chair' : 'table-chair';
+              iconName = 'table-chair';
             } else if (route.name === 'Productos') {
-              iconName = focused ? 'clipboard-list' : 'clipboard-list';
+              iconName = 'clipboard-list';
+            } else if (route.name === 'Resumen') {
+              iconName = 'file-chart';
             }
             return <Icon name={iconName} size={size} color={color} />;
           },
@@ -79,6 +100,7 @@ export default function Navigation() {
         }}>
         <Tab.Screen name="Mesas" component={TablesStackScreen} />
         <Tab.Screen name="Productos" component={ProductsStackScreen} />
+        <Tab.Screen name="Resumen" component={SummaryStackScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );

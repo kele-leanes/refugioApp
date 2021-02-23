@@ -12,6 +12,8 @@ target 'RefugioApp' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'EscPos', :path => '../node_modules/@leesiongchan/react-native-esc-pos'
+
   target 'RefugioAppTests' do
     inherit! :complete
     # Pods for testing

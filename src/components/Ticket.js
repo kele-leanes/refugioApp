@@ -6,7 +6,13 @@ import Button from './Button';
 import PrintTicketModal from './PrintTicketModal';
 import moment from 'moment';
 
-function Ticket({orderProducts, deleteProductFromOrder, orderData}) {
+function Ticket({
+  orderProducts,
+  deleteProductFromOrder,
+  orderData,
+  setOrderTotal,
+  navigation,
+}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [productsToPrint, setProductsToPrint] = useState();
   const [order, setOrder] = useState({date: '', table_name: ''});
@@ -19,7 +25,7 @@ function Ticket({orderProducts, deleteProductFromOrder, orderData}) {
     if (orderData) {
       setOrder({
         ...order,
-        date: moment(+orderData.order_date).format('DD/MM/YYYY'),
+        date: moment(orderData.order_date).format('DD/MM/YYYY'),
         table_name: orderData.table_name,
       });
     }
@@ -32,13 +38,15 @@ function Ticket({orderProducts, deleteProductFromOrder, orderData}) {
           <Text style={{textAlign: 'center'}}>{item.product_qty}</Text>
         </View>
         <View style={styles.threeCell}>
-          <Text>{item.product_name.toUpperCase()}</Text>
+          <Text numberOfLines={1} ellipsizeMode={'tail'}>
+            {item.product_name.toUpperCase()}
+          </Text>
         </View>
         <View style={styles.twoCell}>
           <Text>$ {item.product_price.toFixed(2)}</Text>
         </View>
         <View style={styles.twoCell}>
-          <Text>$ {(item.product_price * item.product_qty).toFixed(2)}</Text>
+          <Text>$ {item.subtotal.toFixed(2)}</Text>
         </View>
         <View style={styles.oneCell}>
           <TouchableOpacity onPress={() => deleteProductFromOrder(item.id)}>
@@ -51,10 +59,8 @@ function Ticket({orderProducts, deleteProductFromOrder, orderData}) {
 
   const calculateTotal = () => {
     let total = 0;
-    orderProducts.forEach(
-      (prod) => (total += prod.product_price * prod.product_qty),
-    );
-    return total.toFixed(2);
+    orderProducts.forEach((prod) => (total += prod.subtotal));
+    return total;
   };
 
   const openPrintModal = (type) => {
@@ -74,7 +80,7 @@ function Ticket({orderProducts, deleteProductFromOrder, orderData}) {
       </View>
       <View style={styles.topRow}>
         <View style={styles.oneCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>CANT.</Text>
+          <Text style={{color: Theme.COLORS.WHITE}}>CNT</Text>
         </View>
         <View style={styles.threeCell}>
           <Text style={{color: Theme.COLORS.WHITE}}>DESCRIPCION</Text>
@@ -95,7 +101,9 @@ function Ticket({orderProducts, deleteProductFromOrder, orderData}) {
       />
       <View style={styles.topRow}>
         <Text style={{color: Theme.COLORS.WHITE}}>TOTAL:</Text>
-        <Text style={{color: Theme.COLORS.WHITE}}>$ {calculateTotal()}</Text>
+        <Text style={{color: Theme.COLORS.WHITE}}>
+          $ {calculateTotal().toFixed(2)}
+        </Text>
       </View>
       <View style={styles.btnRow}>
         <Button
@@ -114,6 +122,10 @@ function Ticket({orderProducts, deleteProductFromOrder, orderData}) {
           title={'Cerrar mesa'}
           icon={'dollar-sign'}
           color={Theme.COLORS.SUCCESS}
+          onPress={() => {
+            navigation.navigate('Conectar impresora');
+            setOrderTotal(calculateTotal());
+          }}
         />
       </View>
       <PrintTicketModal
@@ -129,6 +141,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Theme.COLORS.WHITE,
     flex: 1,
+    width: '100%',
     alignItems: 'center',
     paddingHorizontal: 20,
   },
@@ -138,7 +151,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Theme.FONT.FAMILY,
-    fontSize: 60,
+    fontSize: 40,
     fontWeight: 'bold',
   },
   subTitle: {
@@ -176,13 +189,13 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   productRow: {
-    flexDirection: 'row',
     flex: 1,
+    height: 60,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: Theme.COLORS.SECONDARY,
     paddingVertical: 20,
-    alignSelf: 'stretch',
   },
   btnRow: {
     flexDirection: 'row',

@@ -22,7 +22,9 @@ const ProductItem = ({
           source={{uri: `data:image/jpg;base64,${image}`}}
         />
         <View style={styles.textContainer}>
-          <Text style={styles.title}>{product_name}</Text>
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>
+            {product_name}
+          </Text>
           <Text style={styles.subTitle}>{product_type}</Text>
         </View>
       </View>
