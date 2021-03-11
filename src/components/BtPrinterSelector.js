@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, TouchableOpacity, Text} from 'react-native';
+import {View, TouchableOpacity, Text, Modal} from 'react-native';
 import {BLEPrinter} from 'react-native-thermal-receipt-printer';
 
 const BtPrinterSelector = () => {
@@ -27,7 +27,7 @@ const BtPrinterSelector = () => {
   };
 
   const printBillTest = () => {
-    currentPrinter && BLEPrinter.printBill('<C>sample bill</C>');
+    currentPrinter && BLEPrinter.printBill('<B>MESA: </B><B>2</B>\n');
   };
 
   return (

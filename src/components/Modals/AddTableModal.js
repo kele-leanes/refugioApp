@@ -9,11 +9,11 @@ import {
   Alert,
   ToastAndroid,
 } from 'react-native';
-import {Theme} from '../constants';
+import {Theme} from '../../constants';
 import Icon from 'react-native-vector-icons/Feather';
-import Input from './Input';
-import {db} from '../services/dbService';
-import Button from './Button';
+import Input from '../Input';
+import {db} from '../../services/dbService';
+import Button from '../Button';
 
 const AddTableModal = ({visible, onClose, fetchTables}) => {
   const [tableName, setTableName] = useState();

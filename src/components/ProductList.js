@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {FlatList, TouchableOpacity, View} from 'react-native';
+import {FlatList, SafeAreaView, TouchableOpacity} from 'react-native';
 import ProductItem from './ProductItem';
-import AddProductModal from './AddProductModal';
+import AddProductModal from './Modals/AddProductModal';
 import {db} from '../services/dbService';
 
 const ProductList = ({
@@ -45,16 +45,18 @@ const ProductList = ({
     return (
       <>
         {hasButton ? (
-          <ProductItem
-            id={item.id}
-            product_name={item.product_name}
-            product_type={item.type_name}
-            image={item.image}
-            price={item.product_price}
-            deleteProduct={deleteProduct}
-            updateProduct={openModal}
-            hasButton={hasButton}
-          />
+          <TouchableOpacity activeOpacity={1}>
+            <ProductItem
+              id={item.id}
+              product_name={item.product_name}
+              product_type={item.type_name}
+              image={item.image}
+              price={item.product_price}
+              deleteProduct={deleteProduct}
+              updateProduct={openModal}
+              hasButton={hasButton}
+            />
+          </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={() => addProductToOrder(item.id)}>
             <ProductItem

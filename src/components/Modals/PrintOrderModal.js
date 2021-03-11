@@ -7,29 +7,60 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  Alert,
 } from 'react-native';
 import {Theme} from '../constants';
 import Icon from 'react-native-vector-icons/Feather';
 import Input from './Input';
 import Button from './Button';
+import {printInvoice} from '../utils/Invoice';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const PrintTicketModal = ({visible, orderProducts, onClose}) => {
+import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
+
+const PrintOrderModal = ({visible, orderProducts, orderData, onClose}) => {
   const [productsToPrint, setProductsToPrint] = useState([]);
+  const [currentPrinter, setCurrentPrinter] = useState();
 
   useEffect(() => {
     setProductsToPrint(orderProducts);
   }, [orderProducts]);
 
+  useEffect(() => {
+    BluetoothManager.scanDevices()
+      .then((r) =>
+        BluetoothManager.connect(JSON.parse(r).paired[0].address).then((s) =>
+          setCurrentPrinter(s),
+        ),
+      )
+      .catch((e) => Alert.alert('Error', e));
+  }, []);
+
+  const printRecipt = () => {
+    // currentPrinter &&
+    //   BLEPrinter.printText(makeRecipt(productsToPrint, orderData));
+    // currentPrinter &&
+    // testPrinter(currentPrinter.inner_mac_address, productsToPrint, orderData);
+    currentPrinter && printInvoice(productsToPrint, orderData);
+  };
+
   const deleteProduct = (id) => {
     setProductsToPrint(productsToPrint.filter((elem) => elem.id !== id));
   };
 
-  const printItem = ({item}) => {
+  const updateField = (value, index, key) => {
+    let products = [...productsToPrint];
+    products[index] = {...products[index], [key]: value};
+    setProductsToPrint(products);
+  };
+
+  const printItem = ({item, index}) => {
     return (
       <View style={styles.itemContainer}>
         <View style={styles.oneCell}>
           <Input
             value={item.product_qty.toString()}
+            onChangeText={(text) => updateField(text, index, 'product_qty')}
             inputStyle={styles.inputStyle}
             wrapperStyle={{margin: 0}}
           />
@@ -39,10 +70,15 @@ const PrintTicketModal = ({visible, orderProducts, onClose}) => {
             value={item.product_name}
             inputStyle={styles.inputStyle}
             wrapperStyle={{margin: 0}}
+            editable
           />
         </View>
         <View style={styles.threeCell}>
-          <Input inputStyle={styles.inputStyle} wrapperStyle={{margin: 0}} />
+          <Input
+            inputStyle={styles.inputStyle}
+            wrapperStyle={{margin: 0}}
+            onChangeText={(text) => updateField(text, index, 'comment')}
+          />
         </View>
         <View style={styles.oneCell}>
           <TouchableOpacity onPress={() => deleteProduct(item.id)}>
@@ -78,6 +114,17 @@ const PrintTicketModal = ({visible, orderProducts, onClose}) => {
           <TouchableOpacity onPress={() => onClose()} style={styles.closeBtn}>
             <Icon name={'x'} color={Theme.COLORS.WHITE} size={20} />
           </TouchableOpacity>
+          <View style={styles.printerStatus}>
+            <Text style={{color: Theme.COLORS.WHITE}}>IMPRESORA: </Text>
+            <FontAwesome
+              name={'circle'}
+              color={currentPrinter ? Theme.COLORS.SUCCESS : Theme.COLORS.ERROR}
+              size={20}
+            />
+            <Text style={{color: Theme.COLORS.WHITE}}>
+              {currentPrinter ? ' ' + currentPrinter : ' NO CONECTADA'}
+            </Text>
+          </View>
           <Text style={styles.modalText}>IMPRIMIR COMANDA</Text>
           {productsToPrint ? (
             productsToPrint.length > 0 ? (
@@ -104,8 +151,9 @@ const PrintTicketModal = ({visible, orderProducts, onClose}) => {
             <Button
               title={'Imprimir'}
               icon={'printer'}
+              disabled={!currentPrinter}
               color={Theme.COLORS.SUCCESS}
-              onPress={() => {}}
+              onPress={() => printRecipt()}
             />
           </View>
         </View>
@@ -146,6 +194,13 @@ const styles = StyleSheet.create({
     top: 25,
     position: 'absolute',
   },
+  printerStatus: {
+    left: 25,
+    top: 25,
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   inputStyle: {
     margin: 0,
     width: '100%',
@@ -181,4 +236,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-export default PrintTicketModal;
+export default PrintOrderModal;

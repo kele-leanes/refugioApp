@@ -1,42 +1,36 @@
 import React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import {Theme} from '../constants';
 import Button from '../components/Button';
 
-const TableItem = ({id, orderId, name, deleteTable, openTable, navigation}) => {
+const TableItem = ({
+  id,
+  orderId,
+  name,
+  orderTotal,
+  deleteTable,
+  openTable,
+  navigation,
+}) => {
   return (
-    <View
+    <TouchableOpacity
       style={{
         ...styles.container,
         backgroundColor: orderId ? Theme.COLORS.ERROR : Theme.COLORS.SUCCESS,
-      }}>
+      }}
+      onPress={
+        orderId
+          ? () => navigation.navigate('Cargar orden', {id, orderId})
+          : () => openTable(id)
+      }>
       <View style={styles.textContainer}>
         <Text style={styles.title}>mesa: {name}</Text>
-        <Text style={styles.subTitle}>{}</Text>
+        <Text style={styles.subTitle}>
+          {orderTotal !== null ? `$ ${orderTotal.toFixed(2)}` : ''}
+        </Text>
       </View>
-      {orderId ? (
-        <View style={{...styles.buttonRow, justifyContent: 'flex-end'}}>
-          {/* <Button
-            title={'Cerrar'}
-            onPress={() => console.log(id)}
-            icon={'dollar-sign'}
-            color={Theme.COLORS.SECONDARY}
-          /> */}
-          <Button
-            title={'Agegar'}
-            onPress={() => navigation.navigate('Cargar orden', {id, orderId})}
-            icon={'file-plus'}
-            color={Theme.COLORS.SECONDARY}
-          />
-        </View>
-      ) : (
-        <View style={styles.buttonRow}>
-          <Button
-            title={'Abrir'}
-            onPress={() => openTable(id)}
-            icon={'book-open'}
-            color={Theme.COLORS.SECONDARY}
-          />
+      {!orderId && (
+        <View>
           <Button
             title={'Borrar'}
             onPress={() => deleteTable(id)}
@@ -45,7 +39,7 @@ const TableItem = ({id, orderId, name, deleteTable, openTable, navigation}) => {
           />
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -54,7 +48,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flex: 1,
-    maxWidth: '49%',
+    maxWidth: '50%',
     height: 80,
     alignItems: 'center',
     padding: 10,

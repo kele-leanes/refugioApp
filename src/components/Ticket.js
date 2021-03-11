@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {View, StyleSheet, Text, FlatList, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {Theme} from '../constants';
 import Button from './Button';
-import PrintTicketModal from './PrintTicketModal';
+import PrintInvoiceModal from './Modals/PrintInvoiceModal';
 import moment from 'moment';
 
 function Ticket({
@@ -11,11 +11,11 @@ function Ticket({
   deleteProductFromOrder,
   orderData,
   setOrderTotal,
-  navigation,
+  closeOrder,
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [productsToPrint, setProductsToPrint] = useState();
-  const [order, setOrder] = useState({date: '', table_name: ''});
+  const [order, setOrder] = useState({date: '', table_name: '', order_id: ''});
 
   const _onClose = () => {
     setModalVisible(!modalVisible);
@@ -25,15 +25,16 @@ function Ticket({
     if (orderData) {
       setOrder({
         ...order,
-        date: moment(orderData.order_date).format('DD/MM/YYYY'),
+        date: moment(orderData.order_date).format('DD/MM/YYYY HH:mm:ss'),
         table_name: orderData.table_name,
+        order_id: orderData.id,
       });
     }
   }, [orderData]);
 
   const renderItem = ({item}) => {
     return (
-      <View style={styles.productRow}>
+      <TouchableOpacity style={styles.productRow} activeOpacity={1}>
         <View style={styles.oneCell}>
           <Text style={{textAlign: 'center'}}>{item.product_qty}</Text>
         </View>
@@ -53,19 +54,28 @@ function Ticket({
             <Icon name={'minus-circle'} size={20} color={Theme.COLORS.ERROR} />
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
-  const calculateTotal = () => {
+  const toCalculateTotal = useMemo(() => calculateTotal(), [orderProducts]);
+
+  function calculateTotal() {
     let total = 0;
     orderProducts.forEach((prod) => (total += prod.subtotal));
+    setOrderTotal(total);
     return total;
-  };
+  }
 
   const openPrintModal = (type) => {
     setModalVisible(true);
-    setProductsToPrint(orderProducts.filter((elem) => elem.type_name === type));
+    if (type) {
+      setProductsToPrint(
+        orderProducts.filter((elem) => elem.type_name === type),
+      );
+    } else {
+      setProductsToPrint(orderProducts);
+    }
   };
 
   return (
@@ -102,7 +112,7 @@ function Ticket({
       <View style={styles.topRow}>
         <Text style={{color: Theme.COLORS.WHITE}}>TOTAL:</Text>
         <Text style={{color: Theme.COLORS.WHITE}}>
-          $ {calculateTotal().toFixed(2)}
+          $ {toCalculateTotal.toFixed(2)}
         </Text>
       </View>
       <View style={styles.btnRow}>
@@ -123,15 +133,17 @@ function Ticket({
           icon={'dollar-sign'}
           color={Theme.COLORS.SUCCESS}
           onPress={() => {
-            navigation.navigate('Conectar impresora');
-            setOrderTotal(calculateTotal());
+            openPrintModal();
           }}
         />
       </View>
-      <PrintTicketModal
+      <PrintInvoiceModal
         visible={modalVisible}
         onClose={_onClose}
         orderProducts={productsToPrint}
+        orderData={order}
+        closeOrder={closeOrder}
+        setOrderTotal={setOrderTotal}
       />
     </View>
   );

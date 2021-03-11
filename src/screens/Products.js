@@ -9,11 +9,10 @@ import {
 import ScreenContainer from '../components/ScreenContainer';
 import Icon from 'react-native-vector-icons/Feather';
 import {Theme} from '../constants';
-import AddProductModal from '../components/AddProductModal';
+import AddProductModal from '../components/Modals/AddProductModal';
 import ProductList from '../components/ProductList';
 import FilterCarousel from '../components/FilterCarousel';
 import {db} from '../services/dbService';
-import {ThemeProvider} from '@react-navigation/native';
 
 export default function Products({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -88,7 +87,7 @@ export default function Products({navigation}) {
   }, [navigation]);
 
   return (
-    <ScreenContainer style={{flex: 1}}>
+    <ScreenContainer>
       <View style={{height: 70, width: '100%'}}>
         <FilterCarousel data={productTypes} filterProducts={showProducts} />
       </View>

@@ -24,6 +24,7 @@
 		9F9A815D50948E16750C2632 /* libPods-RefugioApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 47ED11FFA38F007CBDF25178 /* libPods-RefugioApp.a */; };
 		C21B803D668D4959852E8044 /* BebasNeue.otf in Resources */ = {isa = PBXBuildFile; fileRef = 468BB68DACA14C37BB6940E1 /* BebasNeue.otf */; };
 		CDCE8F1F44E04020BA4C23CA /* BebasNeue Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 128A82047B78422C9B702253 /* BebasNeue Regular.otf */; };
+		FCDE867A44524004912F10F8 /* libRNBluetoothEscposPrinter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FC087121DCF8473DBAC7B9AA /* libRNBluetoothEscposPrinter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,8 @@
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F17CFCA400494B31867F02A6 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		F2B9DA5C32DA894EF487FC8A /* Pods-RefugioApp-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RefugioApp-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-RefugioApp-tvOSTests/Pods-RefugioApp-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		D0EEE0A8D693450AB6C6B8E1 /* RNBluetoothEscposPrinter.xcodeproj */ = {isa = PBXFileReference; name = "RNBluetoothEscposPrinter.xcodeproj"; path = "../node_modules/react-native-bluetooth-escpos-printer/ios/RNBluetoothEscposPrinter.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		FC087121DCF8473DBAC7B9AA /* libRNBluetoothEscposPrinter.a */ = {isa = PBXFileReference; name = "libRNBluetoothEscposPrinter.a"; path = "libRNBluetoothEscposPrinter.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +110,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F9A815D50948E16750C2632 /* libPods-RefugioApp.a in Frameworks */,
+				FCDE867A44524004912F10F8 /* libRNBluetoothEscposPrinter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,6 +203,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				D0EEE0A8D693450AB6C6B8E1 /* RNBluetoothEscposPrinter.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -751,11 +756,17 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-bluetooth-escpos-printer/ios/**",
+				);
 				INFOPLIST_FILE = RefugioAppTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -774,11 +785,17 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-bluetooth-escpos-printer/ios/**",
+				);
 				INFOPLIST_FILE = RefugioAppTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -798,7 +815,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-bluetooth-escpos-printer/ios/**",
+				);
 				INFOPLIST_FILE = RefugioApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -821,7 +841,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-bluetooth-escpos-printer/ios/**",
+				);
 				INFOPLIST_FILE = RefugioApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -849,10 +872,16 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-bluetooth-escpos-printer/ios/**",
+				);
 				INFOPLIST_FILE = "RefugioApp-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -879,10 +908,16 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-bluetooth-escpos-printer/ios/**",
+				);
 				INFOPLIST_FILE = "RefugioApp-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -908,10 +943,16 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-bluetooth-escpos-printer/ios/**",
+				);
 				INFOPLIST_FILE = "RefugioApp-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -937,10 +978,16 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-bluetooth-escpos-printer/ios/**",
+				);
 				INFOPLIST_FILE = "RefugioApp-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

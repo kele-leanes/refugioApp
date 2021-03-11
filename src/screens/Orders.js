@@ -158,11 +158,25 @@ export default function Orders({route, navigation}) {
   const setOrderTotal = (total) => {
     db.transaction((tx) => {
       tx.executeSql(
-        'UPDATE orders SET order_total = ?, table_id = ? WHERE id = ?',
-        [total, null, orderId],
+        'UPDATE orders SET order_total = ? WHERE id = ?',
+        [total, orderId],
         (tx, results) => {
           if (results.rowsAffected > 0) {
             console.log('ok');
+          }
+        },
+        (tx, error) =>
+          Alert.alert('Error', 'Algo salió mal. Intente nuevamente'),
+      );
+    });
+  };
+  const closeOrder = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'UPDATE orders SET table_id = ? WHERE id = ?',
+        [null, orderId],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
           }
         },
         (tx, error) =>
@@ -183,6 +197,7 @@ export default function Orders({route, navigation}) {
           deleteProductFromOrder={deleteProductFromOrder}
           orderData={orderData}
           setOrderTotal={setOrderTotal}
+          closeOrder={closeOrder}
           navigation={navigation}
         />
       </View>

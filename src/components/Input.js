@@ -2,7 +2,14 @@ import React from 'react';
 import {TextInput, StyleSheet, View, Text} from 'react-native';
 import {Theme} from './../constants';
 
-const Input = ({label, value, onChangeText, wrapperStyle, inputStyle}) => {
+const Input = ({
+  label,
+  value,
+  onChangeText,
+  wrapperStyle,
+  inputStyle,
+  editable,
+}) => {
   return (
     <View style={wrapperStyle ? wrapperStyle : styles.inputWrapper}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -10,6 +17,7 @@ const Input = ({label, value, onChangeText, wrapperStyle, inputStyle}) => {
         style={{...styles.input, ...inputStyle}}
         value={value}
         onChangeText={onChangeText}
+        editable={!editable}
       />
     </View>
   );

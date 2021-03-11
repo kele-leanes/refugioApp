@@ -9,13 +9,13 @@ import {
   Image,
   ToastAndroid,
 } from 'react-native';
-import Button from './../components/Button';
+import Button from '../Button';
 import Icon from 'react-native-vector-icons/Feather';
-import {Theme} from './../constants';
-import Input from './Input';
-import Select from './Select';
-import {db} from '../services/dbService';
-import {uploadImage} from './../services/uploadImage';
+import {Theme} from '../../constants';
+import Input from '../Input';
+import Select from '../Select';
+import {db} from '../../services/dbService';
+import {uploadImage} from '../../services/uploadImage';
 
 const AddProductModal = ({
   visible,

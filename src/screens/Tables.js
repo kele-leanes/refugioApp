@@ -6,7 +6,8 @@ import TableItem from '../components/TableItem';
 import ScreenContainer from '../components/ScreenContainer';
 import Icon from 'react-native-vector-icons/Feather';
 import {Theme} from './../constants';
-import AddTableModal from '../components/AddTableModal';
+import AddTableModal from '../components/Modals/AddTableModal';
+import {useOrientation} from '../services/useOrientation';
 
 export default function Tables({navigation}) {
   const [flatListItems, setFlatListItems] = useState([]);
@@ -15,7 +16,7 @@ export default function Tables({navigation}) {
   const showTables = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT tables.id, tables.table_name, orders.id AS order_id  FROM tables LEFT JOIN orders ON tables.id = orders.table_id',
+        'SELECT tables.id, tables.table_name, orders.order_total, orders.id AS order_id  FROM tables LEFT JOIN orders ON tables.id = orders.table_id',
         [],
         (tx, results) => {
           var temp = [];
@@ -79,13 +80,14 @@ export default function Tables({navigation}) {
         id={item.id}
         orderId={item.order_id}
         name={item.table_name}
+        orderTotal={item.order_total}
         deleteTable={deleteTable}
         openTable={openTable}
         navigation={navigation}
       />
     );
   };
-
+  const numCols = useOrientation() === 'PORTRAIT' ? 3 : 4;
   return (
     <ScreenContainer>
       <AddTableModal
@@ -97,8 +99,8 @@ export default function Tables({navigation}) {
         data={flatListItems}
         renderItem={RenderItem}
         style={{width: '100%'}}
-        numColumns={2}
-        columnWrapperStyle={{padding: 5, justifyContent: 'space-around'}}
+        numColumns={numCols}
+        key={numCols}
         keyExtractor={(item) => item.id.toString()}
       />
     </ScreenContainer>
