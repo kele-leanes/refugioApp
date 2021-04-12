@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,15 +8,16 @@ import {
   ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import {Theme} from '../constants';
+import { Theme } from '../constants';
 import Button from './Button';
 import PrintInvoiceModal from './Modals/PrintInvoiceModal';
 import PrintOrderModal from './Modals/PrintOrderModal';
 import moment from 'moment';
-import {db} from '../services/dbService';
+import { db } from '../services/dbService';
 import Select from './Select';
-import {useOrientation} from '../services/useOrientation';
-import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
+import { useOrientation } from '../services/useOrientation';
+import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Ticket({
   orderProducts,
@@ -53,6 +54,7 @@ function Ticket({
           BluetoothManager.connect(JSON.parse(r).paired[0].address).then(
             (s) => {
               setCurrentPrinter(s);
+              AsyncStorage.setItem('lastDevice', JSON.stringify(s));
               setIsLoading(false);
             },
           ),
@@ -85,7 +87,7 @@ function Ticket({
   const fetchWaiters = () => {
     db.transaction((tx) => {
       tx.executeSql('SELECT *  FROM waiters', [], (tx, results) => {
-        var temp = [{label: 'Ninguno', value: null}];
+        var temp = [{ label: 'Ninguno', value: null }];
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push({
             label: results.rows.item(i).waiter_name,
@@ -103,7 +105,9 @@ function Ticket({
         'SELECT tables.id, tables.table_name, orders.id AS order_id FROM tables LEFT JOIN orders ON tables.id = orders.table_id WHERE orders.id IS NULL',
         [],
         (tx, results) => {
-          var temp = [{label: orderData.table_name, value: orderData.table_id}];
+          var temp = [
+            { label: orderData.table_name, value: orderData.table_id },
+          ];
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push({
               label: results.rows.item(i).table_name,
@@ -134,11 +138,11 @@ function Ticket({
     changeWaiter(value);
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     return (
       <TouchableOpacity style={styles.productRow} activeOpacity={1}>
         <View style={styles.oneCell}>
-          <Text style={{textAlign: 'center'}}>{item.product_qty}</Text>
+          <Text style={{ textAlign: 'center' }}>{item.product_qty}</Text>
         </View>
         <View style={styles.threeCell}>
           <Text numberOfLines={1} ellipsizeMode={'tail'}>
@@ -189,7 +193,7 @@ function Ticket({
       </View>
       <View style={styles.orderInfo}>
         <Text>FECHA: {order.date}</Text>
-        <View style={{...styles.inputWrapper, flexDirection: direction}}>
+        <View style={{ ...styles.inputWrapper, flexDirection: direction }}>
           <Text>MESA: </Text>
           <Select
             data={avalaibleTables}
@@ -206,28 +210,28 @@ function Ticket({
       </View>
       <View style={styles.topRow}>
         <View style={styles.oneCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>CNT</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>CNT</Text>
         </View>
         <View style={styles.threeCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>DESCRIPCION</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>DESCRIPCION</Text>
         </View>
         <View style={styles.twoCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>UNITARIO</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>UNITARIO</Text>
         </View>
         <View style={styles.twoCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>TOTAL</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>TOTAL</Text>
         </View>
         <View style={styles.oneCell} />
       </View>
       <FlatList
         data={orderProducts}
         renderItem={renderItem}
-        style={{width: '100%'}}
+        style={{ width: '100%' }}
         keyExtractor={(item) => item.id.toString()}
       />
       <View style={styles.topRow}>
-        <Text style={{color: Theme.COLORS.WHITE}}>TOTAL:</Text>
-        <Text style={{color: Theme.COLORS.WHITE}}>
+        <Text style={{ color: Theme.COLORS.WHITE }}>TOTAL:</Text>
+        <Text style={{ color: Theme.COLORS.WHITE }}>
           $ {toCalculateTotal.toFixed(2)}
         </Text>
       </View>
