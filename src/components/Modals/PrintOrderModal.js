@@ -7,41 +7,31 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
-  Alert,
+  ActivityIndicator,
 } from 'react-native';
-import {Theme} from '../constants';
+import {Theme} from '../../constants';
 import Icon from 'react-native-vector-icons/Feather';
-import Input from './Input';
-import Button from './Button';
-import {printInvoice} from '../utils/Invoice';
+import Input from '../Input';
+import Button from '../Button';
+import {printCommand} from '../../utils/Command';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
-
-const PrintOrderModal = ({visible, orderProducts, orderData, onClose}) => {
+const PrintOrderModal = ({
+  visible,
+  orderProducts,
+  orderData,
+  onClose,
+  currentPrinter,
+  isLoading,
+}) => {
   const [productsToPrint, setProductsToPrint] = useState([]);
-  const [currentPrinter, setCurrentPrinter] = useState();
 
   useEffect(() => {
     setProductsToPrint(orderProducts);
   }, [orderProducts]);
 
-  useEffect(() => {
-    BluetoothManager.scanDevices()
-      .then((r) =>
-        BluetoothManager.connect(JSON.parse(r).paired[0].address).then((s) =>
-          setCurrentPrinter(s),
-        ),
-      )
-      .catch((e) => Alert.alert('Error', e));
-  }, []);
-
   const printRecipt = () => {
-    // currentPrinter &&
-    //   BLEPrinter.printText(makeRecipt(productsToPrint, orderData));
-    // currentPrinter &&
-    // testPrinter(currentPrinter.inner_mac_address, productsToPrint, orderData);
-    currentPrinter && printInvoice(productsToPrint, orderData);
+    currentPrinter && printCommand(productsToPrint, orderData);
   };
 
   const deleteProduct = (id) => {
@@ -78,6 +68,7 @@ const PrintOrderModal = ({visible, orderProducts, orderData, onClose}) => {
             inputStyle={styles.inputStyle}
             wrapperStyle={{margin: 0}}
             onChangeText={(text) => updateField(text, index, 'comment')}
+            maxLength={11}
           />
         </View>
         <View style={styles.oneCell}>
@@ -122,8 +113,11 @@ const PrintOrderModal = ({visible, orderProducts, orderData, onClose}) => {
               size={20}
             />
             <Text style={{color: Theme.COLORS.WHITE}}>
-              {currentPrinter ? ' ' + currentPrinter : ' NO CONECTADA'}
+              {currentPrinter ? ' ' + currentPrinter : ' NO CONECTADA '}
             </Text>
+            {isLoading && (
+              <ActivityIndicator size={10} color={Theme.COLORS.WHITE} />
+            )}
           </View>
           <Text style={styles.modalText}>IMPRIMIR COMANDA</Text>
           {productsToPrint ? (

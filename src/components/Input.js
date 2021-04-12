@@ -9,6 +9,7 @@ const Input = ({
   wrapperStyle,
   inputStyle,
   editable,
+  maxLength,
 }) => {
   return (
     <View style={wrapperStyle ? wrapperStyle : styles.inputWrapper}>
@@ -18,6 +19,7 @@ const Input = ({
         value={value}
         onChangeText={onChangeText}
         editable={!editable}
+        maxLength={maxLength}
       />
     </View>
   );

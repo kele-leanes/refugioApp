@@ -1,7 +1,8 @@
 import React, {useState, useCallback} from 'react';
 import {LineChart} from 'react-native-chart-kit';
-import {Dimensions} from 'react-native';
+import {Dimensions, StyleSheet, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
+import {Theme} from '../constants';
 import {db} from '../services/dbService';
 
 function LineChartComponent() {
@@ -19,7 +20,7 @@ function LineChartComponent() {
   const fetchOrders = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        `SELECT SUM(order_total) AS total, strftime("%m-%Y", datetime(order_date/1000, 'unixepoch')) as month FROM orders group by month`,
+        `SELECT SUM(order_total) AS total, strftime("%d-%m", datetime(order_date/1000, 'unixepoch')) as day FROM orders group by day`,
         [],
         (tx, results) => {
           var temp = [];
@@ -29,7 +30,7 @@ function LineChartComponent() {
           console.log(temp);
           setChartData({
             ...chartData,
-            labels: temp.map((elem) => elem.month),
+            labels: temp.map((elem) => elem.day),
             datasets: [
               {
                 data: temp.map((elem) => elem.total),
@@ -43,15 +44,11 @@ function LineChartComponent() {
   };
 
   const chartConfig = {
-    backgroundGradientFrom: '#1E2923',
     backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: '#08130D',
-    backgroundGradientToOpacity: 0.5,
+    backgroundGradientToOpacity: 0,
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
     barPercentage: 0.5,
     decimalPlaces: 0,
-    useShadowColorFromDataset: false, // optional
   };
 
   useFocusEffect(
@@ -61,14 +58,35 @@ function LineChartComponent() {
   );
 
   return (
-    <LineChart
-      data={chartData}
-      width={screenWidth}
-      yAxisLabel="$"
-      height={220}
-      chartConfig={chartConfig}
-    />
+    <View style={styles.card}>
+      <LineChart
+        data={chartData}
+        width={screenWidth - 50}
+        yAxisLabel="$"
+        height={220}
+        chartConfig={chartConfig}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    padding: 10,
+    margin: 5,
+    borderWidth: 1,
+    borderColor: Theme.COLORS.SECONDARY,
+    borderRadius: 15,
+    backgroundColor: Theme.COLORS.PRIMARY,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+});
 
 export default LineChartComponent;

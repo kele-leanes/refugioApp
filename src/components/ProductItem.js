@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, StyleSheet, Image} from 'react-native';
+import {Text, View, StyleSheet, Image, Alert} from 'react-native';
 import {Theme} from '../constants';
 import Icon from 'react-native-vector-icons/Feather';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -14,6 +14,21 @@ const ProductItem = ({
   updateProduct,
   hasButton,
 }) => {
+  const _deleteProduct = (id) => {
+    Alert.alert('ATENCION', '¿Deseas eliminar el producto?', [
+      {
+        text: 'Cancelar',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: () => {
+          deleteProduct(id);
+        },
+      },
+    ]);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.leftColumn}>
@@ -36,7 +51,7 @@ const ProductItem = ({
           <TouchableOpacity onPress={() => updateProduct(id)}>
             <Icon name={'edit'} color={Theme.COLORS.SUCCESS} size={25} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => deleteProduct(id)}>
+          <TouchableOpacity onPress={() => _deleteProduct(id)}>
             <Icon name={'trash'} color={Theme.COLORS.ERROR} size={25} />
           </TouchableOpacity>
         </View>

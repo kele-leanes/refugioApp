@@ -1,10 +1,22 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {View, StyleSheet, Text, FlatList, TouchableOpacity} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  ToastAndroid,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {Theme} from '../constants';
 import Button from './Button';
 import PrintInvoiceModal from './Modals/PrintInvoiceModal';
+import PrintOrderModal from './Modals/PrintOrderModal';
 import moment from 'moment';
+import {db} from '../services/dbService';
+import Select from './Select';
+import {useOrientation} from '../services/useOrientation';
+import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
 
 function Ticket({
   orderProducts,
@@ -12,13 +24,46 @@ function Ticket({
   orderData,
   setOrderTotal,
   closeOrder,
+  changeTable,
+  changeWaiter,
 }) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTicketVisible, setModalTicketVisible] = useState(false);
+  const [modalOrderVisible, setModalOrderVisible] = useState(false);
   const [productsToPrint, setProductsToPrint] = useState();
-  const [order, setOrder] = useState({date: '', table_name: '', order_id: ''});
+  const [waiters, setWaiters] = useState([]);
+  const [avalaibleTables, setAvalablesTables] = useState([]);
+  const [order, setOrder] = useState({
+    date: '',
+    table_name: '',
+    table_id: '',
+    order_id: '',
+    waiter_name: '',
+    waiter_id: null,
+  });
+  const [currentPrinter, setCurrentPrinter] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const direction = useOrientation() === 'PORTRAIT' ? 'column' : 'row';
+
+  useEffect(() => {
+    if (!currentPrinter) {
+      setIsLoading(true);
+      BluetoothManager.scanDevices()
+        .then((r) =>
+          BluetoothManager.connect(JSON.parse(r).paired[0].address).then(
+            (s) => {
+              setCurrentPrinter(s);
+              setIsLoading(false);
+            },
+          ),
+        )
+        .catch((e) => ToastAndroid.show(e.message, ToastAndroid.SHORT));
+    }
+  }, []);
 
   const _onClose = () => {
-    setModalVisible(!modalVisible);
+    setModalTicketVisible(false);
+    setModalOrderVisible(false);
   };
 
   useEffect(() => {
@@ -26,11 +71,68 @@ function Ticket({
       setOrder({
         ...order,
         date: moment(orderData.order_date).format('DD/MM/YYYY HH:mm:ss'),
+        table_id: orderData.table_id,
         table_name: orderData.table_name,
         order_id: orderData.id,
+        waiter_name: orderData.waiter_name,
+        waiter_id: orderData.waiter_id,
       });
+      fetchWaiters();
+      fetchAvalaibleTables();
     }
   }, [orderData]);
+
+  const fetchWaiters = () => {
+    db.transaction((tx) => {
+      tx.executeSql('SELECT *  FROM waiters', [], (tx, results) => {
+        var temp = [{label: 'Ninguno', value: null}];
+        for (let i = 0; i < results.rows.length; ++i) {
+          temp.push({
+            label: results.rows.item(i).waiter_name,
+            value: results.rows.item(i).id,
+          });
+        }
+        setWaiters(temp);
+      });
+    });
+  };
+
+  const fetchAvalaibleTables = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT tables.id, tables.table_name, orders.id AS order_id FROM tables LEFT JOIN orders ON tables.id = orders.table_id WHERE orders.id IS NULL',
+        [],
+        (tx, results) => {
+          var temp = [{label: orderData.table_name, value: orderData.table_id}];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push({
+              label: results.rows.item(i).table_name,
+              value: results.rows.item(i).id,
+            });
+          }
+          setAvalablesTables(temp);
+        },
+      );
+    });
+  };
+
+  const onChangeTable = (value) => {
+    setOrder({
+      ...order,
+      table_id: value,
+      table_name: avalaibleTables.find((table) => table.value === value).label,
+    });
+    changeTable(value);
+  };
+
+  const onChangeWaiter = (value) => {
+    setOrder({
+      ...order,
+      waiter_id: value,
+      waiter_name: waiters.find((waiter) => waiter.value === value).label,
+    });
+    changeWaiter(value);
+  };
 
   const renderItem = ({item}) => {
     return (
@@ -68,12 +170,13 @@ function Ticket({
   }
 
   const openPrintModal = (type) => {
-    setModalVisible(true);
     if (type) {
+      setModalOrderVisible(true);
       setProductsToPrint(
         orderProducts.filter((elem) => elem.type_name === type),
       );
     } else {
+      setModalTicketVisible(true);
       setProductsToPrint(orderProducts);
     }
   };
@@ -85,8 +188,21 @@ function Ticket({
         <Text style={styles.subTitle}>BAR SERRANO</Text>
       </View>
       <View style={styles.orderInfo}>
-        <Text>MESA: {order.table_name}</Text>
         <Text>FECHA: {order.date}</Text>
+        <View style={{...styles.inputWrapper, flexDirection: direction}}>
+          <Text>MESA: </Text>
+          <Select
+            data={avalaibleTables}
+            value={order.table_id}
+            onValueChange={(value) => onChangeTable(value)}
+          />
+          <Text>MOZO: </Text>
+          <Select
+            data={waiters}
+            value={order.waiter_id}
+            onValueChange={(value) => onChangeWaiter(value)}
+          />
+        </View>
       </View>
       <View style={styles.topRow}>
         <View style={styles.oneCell}>
@@ -120,13 +236,22 @@ function Ticket({
           title={'parrilla'}
           icon={'printer'}
           color={Theme.COLORS.SECONDARY}
+          disabled={!order.waiter_id}
           onPress={() => openPrintModal('Parrilla')}
         />
         <Button
           title={'cocina'}
           icon={'printer'}
           color={Theme.COLORS.SECONDARY}
+          disabled={!order.waiter_id}
           onPress={() => openPrintModal('Cocina')}
+        />
+        <Button
+          title={'Barra'}
+          icon={'printer'}
+          color={Theme.COLORS.SECONDARY}
+          disabled={!order.waiter_id}
+          onPress={() => openPrintModal('Bebida')}
         />
         <Button
           title={'Cerrar mesa'}
@@ -138,12 +263,22 @@ function Ticket({
         />
       </View>
       <PrintInvoiceModal
-        visible={modalVisible}
+        visible={modalTicketVisible}
         onClose={_onClose}
         orderProducts={productsToPrint}
         orderData={order}
         closeOrder={closeOrder}
         setOrderTotal={setOrderTotal}
+        currentPrinter={currentPrinter}
+        isLoading={isLoading}
+      />
+      <PrintOrderModal
+        visible={modalOrderVisible}
+        onClose={_onClose}
+        orderProducts={productsToPrint}
+        orderData={order}
+        currentPrinter={currentPrinter}
+        isLoading={isLoading}
       />
     </View>
   );
@@ -163,12 +298,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Theme.FONT.FAMILY,
-    fontSize: 40,
+    fontSize: 30,
     fontWeight: 'bold',
   },
   subTitle: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 10,
   },
   separator: {
     height: 1,
@@ -183,7 +318,6 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   orderInfo: {
-    flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
     padding: 5,
@@ -215,7 +349,11 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-evenly',
     flexWrap: 'wrap',
-    height: 100,
+    height: 110,
+  },
+  inputWrapper: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 

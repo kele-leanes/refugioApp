@@ -75,5 +75,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     height: '100%',
+    flex: 1,
   },
 });

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {Alert, View, Text, ActivityIndicator, StyleSheet} from 'react-native';
 import ProductList from '../components/ProductList';
@@ -27,7 +27,7 @@ export default function Orders({route, navigation}) {
   const fetchOrderById = (id) => {
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT orders.id, orders.order_date, orders.payment_method, tables.table_name FROM orders INNER JOIN tables ON orders.table_id = tables.id WHERE orders.id = ?',
+        'SELECT orders.id, orders.order_date, orders.payment_method, orders.table_id, tables.table_name, waiters.waiter_name, waiters.id AS waiter_id FROM orders INNER JOIN tables ON orders.table_id = tables.id LEFT JOIN waiters ON orders.waiter_id = waiters.id WHERE orders.id = ?',
         [id],
         (tx, results) => {
           if (results.rows.length > 0) {
@@ -162,7 +162,6 @@ export default function Orders({route, navigation}) {
         [total, orderId],
         (tx, results) => {
           if (results.rowsAffected > 0) {
-            console.log('ok');
           }
         },
         (tx, error) =>
@@ -175,6 +174,36 @@ export default function Orders({route, navigation}) {
       tx.executeSql(
         'UPDATE orders SET table_id = ? WHERE id = ?',
         [null, orderId],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
+          }
+        },
+        (tx, error) =>
+          Alert.alert('Error', 'Algo salió mal. Intente nuevamente'),
+      );
+    });
+  };
+
+  const changeTable = (id) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'UPDATE orders SET table_id = ? WHERE id = ?',
+        [id, orderId],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
+          }
+        },
+        (tx, error) =>
+          Alert.alert('Error', 'Algo salió mal. Intente nuevamente'),
+      );
+    });
+  };
+
+  const changeWaiter = (id) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'UPDATE orders SET waiter_id = ? WHERE id = ?',
+        [id, orderId],
         (tx, results) => {
           if (results.rowsAffected > 0) {
           }
@@ -198,6 +227,8 @@ export default function Orders({route, navigation}) {
           orderData={orderData}
           setOrderTotal={setOrderTotal}
           closeOrder={closeOrder}
+          changeTable={changeTable}
+          changeWaiter={changeWaiter}
           navigation={navigation}
         />
       </View>

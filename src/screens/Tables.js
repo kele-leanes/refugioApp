@@ -1,6 +1,13 @@
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useState, useLayoutEffect} from 'react';
-import {FlatList, TouchableOpacity, Alert} from 'react-native';
+import {
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  View,
+  StyleSheet,
+  ToastAndroid,
+} from 'react-native';
 import {db} from '../services/dbService';
 import TableItem from '../components/TableItem';
 import ScreenContainer from '../components/ScreenContainer';
@@ -8,10 +15,12 @@ import Icon from 'react-native-vector-icons/Feather';
 import {Theme} from './../constants';
 import AddTableModal from '../components/Modals/AddTableModal';
 import {useOrientation} from '../services/useOrientation';
+import AddWaiterModal from '../components/Modals/AddWaiterModal';
 
 export default function Tables({navigation}) {
   const [flatListItems, setFlatListItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [waitersModalVisible, setWaitersModalVisible] = useState(false);
 
   const showTables = () => {
     db.transaction((tx) => {
@@ -38,19 +47,32 @@ export default function Tables({navigation}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-          <Icon name={'plus'} color={Theme.COLORS.WHITE} size={30} />
-        </TouchableOpacity>
+        <View style={styles.btnWrapper}>
+          <TouchableOpacity
+            onPress={() => setWaitersModalVisible(true)}
+            style={styles.headerBtn}>
+            <Icon name={'user-plus'} color={Theme.COLORS.WHITE} size={30} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.headerBtn}>
+            <Icon name={'plus'} color={Theme.COLORS.WHITE} size={30} />
+          </TouchableOpacity>
+        </View>
       ),
     });
-  }, [navigation, setModalVisible]);
+  }, [navigation]);
 
   const deleteTable = (id) => {
     db.transaction(function (tx) {
       tx.executeSql('DELETE FROM tables WHERE id=?', [id], (tx, results) => {
         if (results.rowsAffected > 0) {
-          console.log('OK');
           showTables();
+          return ToastAndroid.show(
+            'Mesa Eliminada',
+            ToastAndroid.BOTTOM,
+            ToastAndroid.SHORT,
+          );
         }
       });
     });
@@ -95,6 +117,10 @@ export default function Tables({navigation}) {
         onClose={() => setModalVisible(false)}
         fetchTables={showTables}
       />
+      <AddWaiterModal
+        visible={waitersModalVisible}
+        onClose={() => setWaitersModalVisible(false)}
+      />
       <FlatList
         data={flatListItems}
         renderItem={RenderItem}
@@ -106,3 +132,12 @@ export default function Tables({navigation}) {
     </ScreenContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  btnWrapper: {
+    flexDirection: 'row',
+  },
+  headerBtn: {
+    marginLeft: 100,
+  },
+});

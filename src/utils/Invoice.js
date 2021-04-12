@@ -14,7 +14,6 @@ export async function printInvoice(items, data, orderToPrintTotal) {
     heigthtimes: 2,
     fonttype: 1,
   });
-  await BluetoothEscposPrinter.printText(' \n\r', {});
   await BluetoothEscposPrinter.setBlob(0);
   await BluetoothEscposPrinter.printText('BAR SERRANO\n\r', {});
   await BluetoothEscposPrinter.printText(' \n\r', {});
@@ -22,10 +21,12 @@ export async function printInvoice(items, data, orderToPrintTotal) {
   await BluetoothEscposPrinter.printText(' \n\r', {});
   await BluetoothEscposPrinter.printText('249 - 4209020\n\r', {});
   await BluetoothEscposPrinter.printText(' \n\r', {});
+  await BluetoothEscposPrinter.printerAlign(BluetoothEscposPrinter.ALIGN.LEFT);
   await BluetoothEscposPrinter.printText(
     `${moment().format('DD/MM/YYYY HH:mm:ss')}\n\r`,
     {},
   );
+  await BluetoothEscposPrinter.printText(`MOZO: ${data.waiter_name}\n\r`, {});
   await BluetoothEscposPrinter.printColumn(
     [16, 16],
     [BluetoothEscposPrinter.ALIGN.LEFT, BluetoothEscposPrinter.ALIGN.RIGHT],
@@ -36,18 +37,18 @@ export async function printInvoice(items, data, orderToPrintTotal) {
     '--------------------------------\n\r',
     {},
   );
-  let columnWidths = [6, 15, 6, 6];
+  let columnWidths = [4, 15, 12];
   await BluetoothEscposPrinter.printColumn(
     columnWidths,
     [
       BluetoothEscposPrinter.ALIGN.LEFT,
       BluetoothEscposPrinter.ALIGN.LEFT,
       BluetoothEscposPrinter.ALIGN.RIGHT,
-      BluetoothEscposPrinter.ALIGN.RIGHT,
     ],
-    ['CANT', 'DETALLE', 'UNIT', 'TOTAL'],
+    ['#', 'DETALLE', 'TOTAL'],
     {},
   );
+  await BluetoothEscposPrinter.printText(' \n\r', {});
   items.map(
     async (item) =>
       await BluetoothEscposPrinter.printColumn(
@@ -56,13 +57,11 @@ export async function printInvoice(items, data, orderToPrintTotal) {
           BluetoothEscposPrinter.ALIGN.LEFT,
           BluetoothEscposPrinter.ALIGN.LEFT,
           BluetoothEscposPrinter.ALIGN.RIGHT,
-          BluetoothEscposPrinter.ALIGN.RIGHT,
         ],
         [
           `${item.product_qty}`,
           item.product_name.toUpperCase(),
-          `${item.product_price}`,
-          `${item.product_qty * item.product_price}`,
+          `${(item.product_qty * item.product_price).toFixed(2)}`,
         ],
         {},
       ),
@@ -74,8 +73,11 @@ export async function printInvoice(items, data, orderToPrintTotal) {
   await BluetoothEscposPrinter.printColumn(
     [16, 16],
     [BluetoothEscposPrinter.ALIGN.LEFT, BluetoothEscposPrinter.ALIGN.RIGHT],
-    ['TOTAL: ', `$ ${orderToPrintTotal}`],
+    ['TOTAL: ', `$ ${orderToPrintTotal.toFixed(2)}`],
     {},
+  );
+  await BluetoothEscposPrinter.printerAlign(
+    BluetoothEscposPrinter.ALIGN.CENTER,
   );
   await BluetoothEscposPrinter.printText(' \n\r', {});
   await BluetoothEscposPrinter.printText(' \n\r', {});

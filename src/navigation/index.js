@@ -4,7 +4,6 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Tables, Orders, Products, Summary} from '../screens';
 import {Theme} from '../constants';
-import LogoTitle from '../components/LogoTitle';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BtPrinterSelector from '../components/BtPrinterSelector';
 
@@ -13,7 +12,6 @@ const Tab = createBottomTabNavigator();
 const TablesStack = createStackNavigator();
 
 const options = {
-  // headerLeft: () => <LogoTitle />,
   headerRightContainerStyle: {paddingRight: 20},
   headerLeftContainerStyle: {paddingLeft: 20},
   headerTitleAlign: 'center',

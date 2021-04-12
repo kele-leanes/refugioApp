@@ -1,5 +1,5 @@
 import React from 'react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {
   Text,
   View,
@@ -8,7 +8,7 @@ import {
   StyleSheet,
   FlatList,
   Alert,
-  ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import {Theme} from '../../constants';
 import Icon from 'react-native-vector-icons/Feather';
@@ -18,8 +18,6 @@ import {printInvoice} from '../../utils/Invoice';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useNavigation} from '@react-navigation/native';
 
-import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
-
 const PrintInvoiceModal = ({
   visible,
   orderProducts,
@@ -27,33 +25,21 @@ const PrintInvoiceModal = ({
   onClose,
   closeOrder,
   setOrderTotal,
+  currentPrinter,
+  isLoading,
 }) => {
   const [productsToPrint, setProductsToPrint] = useState([]);
-  const [orderToPrintTotal, setOrderToPrintTotal] = useState();
-  const [currentPrinter, setCurrentPrinter] = useState();
 
   const navigation = useNavigation();
 
   useEffect(() => {
     setProductsToPrint(orderProducts);
+    return () => setProductsToPrint([]);
   }, [orderProducts]);
 
-  useEffect(() => {
-    calculateTotal();
-  }, [productsToPrint]);
-
-  useEffect(() => {
-    BluetoothManager.scanDevices()
-      .then((r) =>
-        BluetoothManager.connect(JSON.parse(r).paired[0].address).then((s) =>
-          setCurrentPrinter(s),
-        ),
-      )
-      .catch((e) => ToastAndroid.show(e.message, ToastAndroid.SHORT));
-  }, []);
-
   const printRecipt = () => {
-    currentPrinter && printInvoice(productsToPrint, orderData, orderToPrintTotal);
+    currentPrinter &&
+      printInvoice(productsToPrint, orderData, calculateTotal());
   };
 
   const deleteProduct = (id) => {
@@ -77,18 +63,20 @@ const PrintInvoiceModal = ({
         text: 'OK',
         onPress: () => {
           navigation.navigate('Mesas');
-          setOrderTotal(orderToPrintTotal);
+          setOrderTotal(calculateTotal());
           closeOrder();
         },
       },
     ]);
   };
 
-  function calculateTotal() {
+  const calculateTotal = useCallback(() => {
     let total = 0;
-    productsToPrint?.forEach((prod) => (total += prod.subtotal));
-    setOrderToPrintTotal(total);
-  }
+    productsToPrint?.forEach(
+      (prod) => (total += prod.product_qty * prod.product_price),
+    );
+    return total;
+  }, [productsToPrint]);
 
   const printItem = ({item, index}) => {
     return (
@@ -138,7 +126,7 @@ const PrintInvoiceModal = ({
     return (
       <View style={styles.topRow}>
         <Text style={{color: Theme.COLORS.WHITE}}>TOTAL:</Text>
-        <Text style={{color: Theme.COLORS.WHITE}}>$ {orderToPrintTotal}</Text>
+        <Text style={{color: Theme.COLORS.WHITE}}>$ {calculateTotal()}</Text>
       </View>
     );
   };
@@ -162,8 +150,11 @@ const PrintInvoiceModal = ({
               size={20}
             />
             <Text style={{color: Theme.COLORS.WHITE}}>
-              {currentPrinter ? ' ' + currentPrinter : ' NO CONECTADA'}
+              {currentPrinter ? ' ' + currentPrinter : ' NO CONECTADA '}
             </Text>
+            {isLoading && (
+              <ActivityIndicator size={10} color={Theme.COLORS.WHITE} />
+            )}
           </View>
           <Text style={styles.modalText}>IMPRIMIR TICKET</Text>
           {productsToPrint ? (
@@ -262,7 +253,9 @@ const styles = StyleSheet.create({
     width: '40%',
     marginTop: 10,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    alignContent: 'space-between',
+    justifyContent: 'space-between',
     alignSelf: 'center',
   },
   itemContainer: {

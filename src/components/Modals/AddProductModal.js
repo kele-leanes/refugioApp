@@ -158,6 +158,7 @@ const AddProductModal = ({
             <Input
               label={'Nombre'}
               value={product.product_name}
+              maxLength={13}
               onChangeText={(text) =>
                 setProduct({...product, product_name: text})
               }

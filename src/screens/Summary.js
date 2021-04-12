@@ -7,7 +7,7 @@ const Summary = () => {
   return (
     <ScreenContainer>
       {/* <TableComponent /> */}
-      {/* <LineChartComponent /> */}
+      <LineChartComponent />
     </ScreenContainer>
   );
 };
