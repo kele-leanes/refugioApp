@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -7,15 +7,14 @@ import {
   StyleSheet,
   Alert,
   ToastAndroid,
-  FlatList,
 } from 'react-native';
-import {Theme} from '../../constants';
+import { Theme } from '../../constants';
 import Icon from 'react-native-vector-icons/Feather';
 import Input from '../Input';
-import {db} from '../../services/dbService';
+import { db } from '../../services/dbService';
 import Button from '../Button';
 
-const AddWaiterModal = ({visible, onClose}) => {
+const AddWaiterModal = ({ visible, onClose }) => {
   const [waiterName, setWaiterName] = useState();
   const [waiters, setWaiters] = useState([]);
 
@@ -77,7 +76,7 @@ const AddWaiterModal = ({visible, onClose}) => {
     });
   };
 
-  const RenderItem = ({item}) => {
+  const RenderItem = ({ item }) => {
     return (
       <View style={styles.item}>
         <Text style={styles.itemText}>{item.waiter_name}</Text>
@@ -110,13 +109,6 @@ const AddWaiterModal = ({visible, onClose}) => {
                 ))
               : null}
           </View>
-          {/* <FlatList
-            data={waiters}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={RenderItem}
-            numColumns={4}
-            style={{width: '50%', maxHeight: 400}}
-          /> */}
           <View style={styles.btnWrapper}>
             <Button
               title={'cancelar'}

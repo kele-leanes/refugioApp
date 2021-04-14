@@ -1,12 +1,12 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
-import {Theme} from './../constants';
+import { StyleSheet, Text, View } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { Theme } from './../constants';
 
-const Select = ({data = [], value, onValueChange, label, labelStyle}) => {
+const Select = ({ data = [], value, onValueChange, label, labelStyle }) => {
   return (
     <View style={styles.selectWrapper}>
-      {label && <Text style={{...styles.label, ...labelStyle}}>{label}</Text>}
+      {label && <Text style={{ ...styles.label, ...labelStyle }}>{label}</Text>}
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={value}

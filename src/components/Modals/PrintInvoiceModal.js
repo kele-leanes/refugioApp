@@ -1,5 +1,5 @@
 import React from 'react';
-import {useState, useEffect, useCallback} from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Text,
   View,
@@ -8,15 +8,16 @@ import {
   StyleSheet,
   FlatList,
   Alert,
-  ActivityIndicator,
+  Switch,
+  TextInput,
 } from 'react-native';
-import {Theme} from '../../constants';
+import { Theme } from '../../constants';
 import Icon from 'react-native-vector-icons/Feather';
 import Input from '../Input';
 import Button from '../Button';
-import {printInvoice} from '../../utils/Invoice';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {useNavigation} from '@react-navigation/native';
+import { printInvoice } from '../../utils/Invoice';
+import { useNavigation } from '@react-navigation/native';
+import { usePrinter } from '../../context/Printer/PrinterState';
 
 const PrintInvoiceModal = ({
   visible,
@@ -25,10 +26,11 @@ const PrintInvoiceModal = ({
   onClose,
   closeOrder,
   setOrderTotal,
-  currentPrinter,
-  isLoading,
 }) => {
   const [productsToPrint, setProductsToPrint] = useState([]);
+  const [hasDisconunt, setHasDiscount] = useState(false);
+  const [discount, onChange] = useState(0);
+  const [printerState] = usePrinter();
 
   const navigation = useNavigation();
 
@@ -38,8 +40,8 @@ const PrintInvoiceModal = ({
   }, [orderProducts]);
 
   const printRecipt = () => {
-    currentPrinter &&
-      printInvoice(productsToPrint, orderData, calculateTotal());
+    printerState.printer &&
+      printInvoice(productsToPrint, orderData, calculateTotal(), discount);
   };
 
   const deleteProduct = (id) => {
@@ -48,7 +50,7 @@ const PrintInvoiceModal = ({
 
   const updateField = (value, index, key) => {
     let products = [...productsToPrint];
-    products[index] = {...products[index], [key]: value};
+    products[index] = { ...products[index], [key]: value };
     setProductsToPrint(products);
   };
 
@@ -75,10 +77,13 @@ const PrintInvoiceModal = ({
     productsToPrint?.forEach(
       (prod) => (total += prod.product_qty * prod.product_price),
     );
+    if (hasDisconunt) {
+      return total - discount;
+    }
     return total;
-  }, [productsToPrint]);
+  }, [discount, hasDisconunt, productsToPrint]);
 
-  const printItem = ({item, index}) => {
+  const printItem = ({ item, index }) => {
     return (
       <View style={styles.itemContainer}>
         <View style={styles.oneCell}>
@@ -86,14 +91,14 @@ const PrintInvoiceModal = ({
             value={item.product_qty.toString()}
             onChangeText={(text) => updateField(text, index, 'product_qty')}
             inputStyle={styles.inputStyle}
-            wrapperStyle={{margin: 0}}
+            wrapperStyle={{ margin: 0 }}
           />
         </View>
         <View style={styles.twoCell}>
           <Input
             value={item.product_name}
             inputStyle={styles.inputStyle}
-            wrapperStyle={{margin: 0}}
+            wrapperStyle={{ margin: 0 }}
             editable
           />
         </View>
@@ -110,26 +115,18 @@ const PrintInvoiceModal = ({
     return (
       <View style={styles.topRow}>
         <View style={styles.oneCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>CANT.</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>CANT.</Text>
         </View>
         <View style={styles.twoCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>DESCRIPCION</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>DESCRIPCION</Text>
         </View>
         <View style={styles.oneCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>QUITAR</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>QUITAR</Text>
         </View>
       </View>
     );
   };
 
-  const ItemFooter = () => {
-    return (
-      <View style={styles.topRow}>
-        <Text style={{color: Theme.COLORS.WHITE}}>TOTAL:</Text>
-        <Text style={{color: Theme.COLORS.WHITE}}>$ {calculateTotal()}</Text>
-      </View>
-    );
-  };
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View style={styles.centeredView}>
@@ -142,20 +139,6 @@ const PrintInvoiceModal = ({
             style={styles.closeBtn}>
             <Icon name={'x'} color={Theme.COLORS.WHITE} size={20} />
           </TouchableOpacity>
-          <View style={styles.printerStatus}>
-            <Text style={{color: Theme.COLORS.WHITE}}>IMPRESORA: </Text>
-            <FontAwesome
-              name={'circle'}
-              color={currentPrinter ? Theme.COLORS.SUCCESS : Theme.COLORS.ERROR}
-              size={20}
-            />
-            <Text style={{color: Theme.COLORS.WHITE}}>
-              {currentPrinter ? ' ' + currentPrinter : ' NO CONECTADA '}
-            </Text>
-            {isLoading && (
-              <ActivityIndicator size={10} color={Theme.COLORS.WHITE} />
-            )}
-          </View>
           <Text style={styles.modalText}>IMPRIMIR TICKET</Text>
           {productsToPrint ? (
             productsToPrint.length > 0 ? (
@@ -164,8 +147,7 @@ const PrintInvoiceModal = ({
                 renderItem={printItem}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={ItemHeader}
-                ListFooterComponent={ItemFooter}
-                style={{width: '30%', maxHeight: 400}}
+                style={{ width: '30%', maxHeight: 400 }}
               />
             ) : (
               <Text style={styles.alertText}>
@@ -173,6 +155,36 @@ const PrintInvoiceModal = ({
               </Text>
             )
           ) : null}
+          <View style={styles.topRow}>
+            <View style={styles.switchWrapper}>
+              <Text style={{ color: Theme.COLORS.WHITE }}>DESCUENTO</Text>
+              <Switch
+                trackColor={{ false: '#767577', true: Theme.COLORS.BACKGROUND }}
+                thumbColor={hasDisconunt ? Theme.COLORS.SUCCESS : '#f4f3f4'}
+                onValueChange={() => {
+                  setHasDiscount(!hasDisconunt);
+                  onChange(0);
+                }}
+                value={hasDisconunt}
+              />
+            </View>
+            <View>
+              {hasDisconunt && (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  value={discount}
+                  keyboardType="numeric"
+                />
+              )}
+            </View>
+          </View>
+          <View style={styles.topRow}>
+            <Text style={{ color: Theme.COLORS.WHITE }}>TOTAL:</Text>
+            <Text style={{ color: Theme.COLORS.WHITE }}>
+              $ {calculateTotal()}
+            </Text>
+          </View>
           <View style={styles.btnWrapper}>
             <Button
               title={'cancelar'}
@@ -187,7 +199,7 @@ const PrintInvoiceModal = ({
               title={'Imprimir ticket'}
               icon={'printer'}
               disabled={
-                !currentPrinter ||
+                !printerState.printer ||
                 (productsToPrint && !productsToPrint.length > 0)
               }
               onPress={() => printRecipt()}
@@ -269,6 +281,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: 40,
   },
   threeCell: {
     flex: 3,
@@ -289,6 +302,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     maxHeight: 400,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.COLORS.BACKGROUND,
+    height: 40,
+    width: 60,
+    color: Theme.COLORS.WHITE,
+    textAlign: 'right',
+  },
+  switchWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 export default PrintInvoiceModal;

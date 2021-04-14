@@ -1,4 +1,4 @@
-import {BluetoothEscposPrinter} from 'react-native-bluetooth-escpos-printer';
+import { BluetoothEscposPrinter } from 'react-native-bluetooth-escpos-printer';
 import moment from 'moment';
 
 export async function printCommand(items, data) {

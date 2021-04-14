@@ -1,8 +1,8 @@
-import {BluetoothEscposPrinter} from 'react-native-bluetooth-escpos-printer';
+import { BluetoothEscposPrinter } from 'react-native-bluetooth-escpos-printer';
 import moment from 'moment';
-import {padStart} from 'lodash';
+import { padStart } from 'lodash';
 
-export async function printInvoice(items, data, orderToPrintTotal) {
+export async function printInvoice(items, data, orderToPrintTotal, discount) {
   await BluetoothEscposPrinter.printerAlign(
     BluetoothEscposPrinter.ALIGN.CENTER,
   );
@@ -68,6 +68,12 @@ export async function printInvoice(items, data, orderToPrintTotal) {
   );
   await BluetoothEscposPrinter.printText(
     '--------------------------------\n\r',
+    {},
+  );
+  await BluetoothEscposPrinter.printColumn(
+    [16, 16],
+    [BluetoothEscposPrinter.ALIGN.LEFT, BluetoothEscposPrinter.ALIGN.RIGHT],
+    ['DESCUENTO: ', `$ ${parseInt(discount, 10).toFixed(2)}`],
     {},
   );
   await BluetoothEscposPrinter.printColumn(

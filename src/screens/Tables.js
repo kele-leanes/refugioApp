@@ -1,5 +1,5 @@
-import {useFocusEffect} from '@react-navigation/native';
-import React, {useCallback, useState, useLayoutEffect} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState, useLayoutEffect } from 'react';
 import {
   FlatList,
   TouchableOpacity,
@@ -8,19 +8,21 @@ import {
   StyleSheet,
   ToastAndroid,
 } from 'react-native';
-import {db} from '../services/dbService';
+import { db } from '../services/dbService';
 import TableItem from '../components/TableItem';
 import ScreenContainer from '../components/ScreenContainer';
 import Icon from 'react-native-vector-icons/Feather';
-import {Theme} from './../constants';
+import { Theme } from './../constants';
 import AddTableModal from '../components/Modals/AddTableModal';
-import {useOrientation} from '../services/useOrientation';
+import { useOrientation } from '../services/useOrientation';
 import AddWaiterModal from '../components/Modals/AddWaiterModal';
+import { PrinterSelectorModal } from '../components/Modals/PrinterSelecorModal';
 
-export default function Tables({navigation}) {
+export default function Tables({ navigation }) {
   const [flatListItems, setFlatListItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [waitersModalVisible, setWaitersModalVisible] = useState(false);
+  const [printerModalVisible, setPrinterModalVisible] = useState(false);
 
   const showTables = () => {
     db.transaction((tx) => {
@@ -60,8 +62,17 @@ export default function Tables({navigation}) {
           </TouchableOpacity>
         </View>
       ),
+      headerLeft: headerLeft,
     });
   }, [navigation]);
+
+  const headerLeft = () => {
+    return (
+      <TouchableOpacity onPress={() => setPrinterModalVisible(true)}>
+        <Icon name={'printer'} color={Theme.COLORS.WHITE} size={30} />
+      </TouchableOpacity>
+    );
+  };
 
   const deleteTable = (id) => {
     db.transaction(function (tx) {
@@ -86,7 +97,7 @@ export default function Tables({navigation}) {
         (tx, results) => {
           if (results.rowsAffected > 0) {
             let orderId = results.insertId;
-            navigation.navigate('Cargar orden', {id, orderId});
+            navigation.navigate('Cargar orden', { id, orderId });
           }
         },
         (tx, error) => {
@@ -96,7 +107,7 @@ export default function Tables({navigation}) {
     });
   };
 
-  const RenderItem = ({item}) => {
+  const RenderItem = ({ item }) => {
     return (
       <TableItem
         id={item.id}
@@ -121,10 +132,14 @@ export default function Tables({navigation}) {
         visible={waitersModalVisible}
         onClose={() => setWaitersModalVisible(false)}
       />
+      <PrinterSelectorModal
+        isVisible={printerModalVisible}
+        onClose={() => setPrinterModalVisible(false)}
+      />
       <FlatList
         data={flatListItems}
         renderItem={RenderItem}
-        style={{width: '100%'}}
+        style={{ width: '100%' }}
         numColumns={numCols}
         key={numCols}
         keyExtractor={(item) => item.id.toString()}

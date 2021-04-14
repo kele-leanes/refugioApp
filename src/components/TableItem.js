@@ -1,6 +1,6 @@
 import React from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
-import {Theme} from '../constants';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Theme } from '../constants';
 import Button from '../components/Button';
 
 const TableItem = ({
@@ -20,7 +20,7 @@ const TableItem = ({
       }}
       onPress={
         orderId
-          ? () => navigation.navigate('Cargar orden', {id, orderId})
+          ? () => navigation.navigate('Cargar orden', { id, orderId })
           : () => openTable(id)
       }>
       <View style={styles.textContainer}>

@@ -1,19 +1,19 @@
-import * as React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createStackNavigator} from '@react-navigation/stack';
-import {Tables, Orders, Products, Summary} from '../screens';
-import {Theme} from '../constants';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Tables, Orders, Products, Summary } from '../screens';
+import { Theme } from '../constants';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import BtPrinterSelector from '../components/BtPrinterSelector';
+import { PrintProvider } from '../context/Printer/PrinterState';
 
 const Tab = createBottomTabNavigator();
 
 const TablesStack = createStackNavigator();
 
 const options = {
-  headerRightContainerStyle: {paddingRight: 20},
-  headerLeftContainerStyle: {paddingLeft: 20},
+  headerRightContainerStyle: { paddingRight: 20 },
+  headerLeftContainerStyle: { paddingLeft: 20 },
   headerTitleAlign: 'center',
   headerStyle: {
     backgroundColor: Theme.COLORS.PRIMARY,
@@ -34,10 +34,6 @@ function TablesStackScreen() {
         name="Cargar orden"
         component={Orders}
         options={options}
-      />
-      <TablesStack.Screen
-        name="Conectar impresora"
-        component={BtPrinterSelector}
       />
     </TablesStack.Navigator>
   );
@@ -73,33 +69,35 @@ function SummaryStackScreen() {
 
 export default function Navigation() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({route}) => ({
-          tabBarIcon: ({focused, color, size}) => {
-            let iconName;
-            if (route.name === 'Mesas') {
-              iconName = 'table-chair';
-            } else if (route.name === 'Productos') {
-              iconName = 'clipboard-list';
-            } else if (route.name === 'Resumen') {
-              iconName = 'file-chart';
-            }
-            return <Icon name={iconName} size={size} color={color} />;
-          },
-        })}
-        tabBarOptions={{
-          activeTintColor: Theme.COLORS.WHITE,
-          inactiveTintColor: 'grey',
-          style: {
-            backgroundColor: Theme.COLORS.PRIMARY,
-            borderTopColor: Theme.COLORS.PRIMARY,
-          },
-        }}>
-        <Tab.Screen name="Mesas" component={TablesStackScreen} />
-        <Tab.Screen name="Productos" component={ProductsStackScreen} />
-        <Tab.Screen name="Resumen" component={SummaryStackScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <PrintProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ color, size }) => {
+              let iconName;
+              if (route.name === 'Mesas') {
+                iconName = 'table-chair';
+              } else if (route.name === 'Productos') {
+                iconName = 'clipboard-list';
+              } else if (route.name === 'Resumen') {
+                iconName = 'file-chart';
+              }
+              return <Icon name={iconName} size={size} color={color} />;
+            },
+          })}
+          tabBarOptions={{
+            activeTintColor: Theme.COLORS.WHITE,
+            inactiveTintColor: 'grey',
+            style: {
+              backgroundColor: Theme.COLORS.PRIMARY,
+              borderTopColor: Theme.COLORS.PRIMARY,
+            },
+          }}>
+          <Tab.Screen name="Mesas" component={TablesStackScreen} />
+          <Tab.Screen name="Productos" component={ProductsStackScreen} />
+          <Tab.Screen name="Resumen" component={SummaryStackScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </PrintProvider>
   );
 }

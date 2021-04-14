@@ -17,7 +17,6 @@ import { db } from '../services/dbService';
 import Select from './Select';
 import { useOrientation } from '../services/useOrientation';
 import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Ticket({
   orderProducts,
@@ -41,27 +40,7 @@ function Ticket({
     waiter_name: '',
     waiter_id: null,
   });
-  const [currentPrinter, setCurrentPrinter] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-
   const direction = useOrientation() === 'PORTRAIT' ? 'column' : 'row';
-
-  useEffect(() => {
-    if (!currentPrinter) {
-      setIsLoading(true);
-      BluetoothManager.scanDevices()
-        .then((r) =>
-          BluetoothManager.connect(JSON.parse(r).paired[0].address).then(
-            (s) => {
-              setCurrentPrinter(s);
-              AsyncStorage.setItem('lastDevice', JSON.stringify(s));
-              setIsLoading(false);
-            },
-          ),
-        )
-        .catch((e) => ToastAndroid.show(e.message, ToastAndroid.SHORT));
-    }
-  }, []);
 
   const _onClose = () => {
     setModalTicketVisible(false);
@@ -273,16 +252,12 @@ function Ticket({
         orderData={order}
         closeOrder={closeOrder}
         setOrderTotal={setOrderTotal}
-        currentPrinter={currentPrinter}
-        isLoading={isLoading}
       />
       <PrintOrderModal
         visible={modalOrderVisible}
         onClose={_onClose}
         orderProducts={productsToPrint}
         orderData={order}
-        currentPrinter={currentPrinter}
-        isLoading={isLoading}
       />
     </View>
   );
