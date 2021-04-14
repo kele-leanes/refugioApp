@@ -1,8 +1,8 @@
 import React from 'react';
-import {Text, View, StyleSheet, Image, Alert} from 'react-native';
-import {Theme} from '../constants';
+import { Text, View, StyleSheet, Image, Alert } from 'react-native';
+import { Theme } from '../constants';
 import Icon from 'react-native-vector-icons/Feather';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const ProductItem = ({
   id,
@@ -34,7 +34,7 @@ const ProductItem = ({
       <View style={styles.leftColumn}>
         <Image
           style={styles.image}
-          source={{uri: `data:image/jpg;base64,${image}`}}
+          source={{ uri: `data:image/jpg;base64,${image}` }}
         />
         <View style={styles.textContainer}>
           <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>

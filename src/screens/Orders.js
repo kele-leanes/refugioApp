@@ -1,14 +1,14 @@
-import React, {useState, useCallback} from 'react';
-import {useFocusEffect} from '@react-navigation/native';
-import {Alert, View, Text, ActivityIndicator, StyleSheet} from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { Alert, View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import ProductList from '../components/ProductList';
 import ScreenContainer from '../components/ScreenContainer';
 import Ticket from '../components/Ticket';
 import FilterCarousel from '../components/FilterCarousel';
-import {db} from '../services/dbService';
-import {Theme} from '../constants';
+import { db } from '../services/dbService';
+import { Theme } from '../constants';
 
-export default function Orders({route, navigation}) {
+export default function Orders({ route, navigation }) {
   const [products, setProducts] = useState(null);
   const [orderProducts, setOrderProducts] = useState([]);
   const [productTypes, setProductTypes] = useState([]);
@@ -45,7 +45,7 @@ export default function Orders({route, navigation}) {
         'SELECT * FROM product_types',
         [],
         (tx, results) => {
-          let temp = [{id: 0, type_name: 'todos'}];
+          let temp = [{ id: 0, type_name: 'todos' }];
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push(results.rows.item(i));
           }
@@ -215,7 +215,7 @@ export default function Orders({route, navigation}) {
   };
 
   return (
-    <ScreenContainer style={{flexDirection: 'row'}}>
+    <ScreenContainer style={{ flexDirection: 'row' }}>
       <View
         style={{
           width: '50%',
@@ -239,7 +239,7 @@ export default function Orders({route, navigation}) {
           justifyContent: 'flex-start',
           alignItems: 'center',
         }}>
-        <View style={{height: 70, width: '100%'}}>
+        <View style={{ height: 70, width: '100%' }}>
           <FilterCarousel data={productTypes} filterProducts={showProducts} />
         </View>
         {products ? (

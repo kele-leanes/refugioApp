@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {FlatList, SafeAreaView, TouchableOpacity} from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, TouchableOpacity } from 'react-native';
 import ProductItem from './ProductItem';
 import AddProductModal from './Modals/AddProductModal';
-import {db} from '../services/dbService';
+import { db } from '../services/dbService';
 
 const ProductList = ({
   products,
@@ -41,7 +41,7 @@ const ProductList = ({
     });
   };
 
-  const RenderItem = ({item}) => {
+  const RenderItem = ({ item }) => {
     return (
       <>
         {hasButton ? (
@@ -77,7 +77,7 @@ const ProductList = ({
       <FlatList
         data={products}
         renderItem={RenderItem}
-        style={{width: '100%'}}
+        style={{ width: '100%' }}
         keyExtractor={(item) => item.id.toString()}
       />
       <AddProductModal

@@ -1,5 +1,5 @@
 import React from 'react';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -7,31 +7,24 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
-  ActivityIndicator,
 } from 'react-native';
-import {Theme} from '../../constants';
+import { Theme } from '../../constants';
 import Icon from 'react-native-vector-icons/Feather';
 import Input from '../Input';
 import Button from '../Button';
-import {printCommand} from '../../utils/Command';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { printCommand } from '../../utils/Command';
+import { usePrinter } from '../../context/Printer/PrinterState';
 
-const PrintOrderModal = ({
-  visible,
-  orderProducts,
-  orderData,
-  onClose,
-  currentPrinter,
-  isLoading,
-}) => {
+const PrintOrderModal = ({ visible, orderProducts, orderData, onClose }) => {
   const [productsToPrint, setProductsToPrint] = useState([]);
+  const [printerState] = usePrinter();
 
   useEffect(() => {
     setProductsToPrint(orderProducts);
   }, [orderProducts]);
 
   const printRecipt = () => {
-    currentPrinter && printCommand(productsToPrint, orderData);
+    printerState.printer && printCommand(productsToPrint, orderData);
   };
 
   const deleteProduct = (id) => {
@@ -40,11 +33,11 @@ const PrintOrderModal = ({
 
   const updateField = (value, index, key) => {
     let products = [...productsToPrint];
-    products[index] = {...products[index], [key]: value};
+    products[index] = { ...products[index], [key]: value };
     setProductsToPrint(products);
   };
 
-  const printItem = ({item, index}) => {
+  const printItem = ({ item, index }) => {
     return (
       <View style={styles.itemContainer}>
         <View style={styles.oneCell}>
@@ -52,21 +45,21 @@ const PrintOrderModal = ({
             value={item.product_qty.toString()}
             onChangeText={(text) => updateField(text, index, 'product_qty')}
             inputStyle={styles.inputStyle}
-            wrapperStyle={{margin: 0}}
+            wrapperStyle={{ margin: 0 }}
           />
         </View>
         <View style={styles.twoCell}>
           <Input
             value={item.product_name}
             inputStyle={styles.inputStyle}
-            wrapperStyle={{margin: 0}}
+            wrapperStyle={{ margin: 0 }}
             editable
           />
         </View>
         <View style={styles.threeCell}>
           <Input
             inputStyle={styles.inputStyle}
-            wrapperStyle={{margin: 0}}
+            wrapperStyle={{ margin: 0 }}
             onChangeText={(text) => updateField(text, index, 'comment')}
             maxLength={11}
           />
@@ -84,16 +77,16 @@ const PrintOrderModal = ({
     return (
       <View style={styles.topRow}>
         <View style={styles.oneCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>CANT.</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>CANT.</Text>
         </View>
         <View style={styles.twoCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>DESCRIPCION</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>DESCRIPCION</Text>
         </View>
         <View style={styles.threeCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>OBSERVACIONES</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>OBSERVACIONES</Text>
         </View>
         <View style={styles.oneCell}>
-          <Text style={{color: Theme.COLORS.WHITE}}>QUITAR</Text>
+          <Text style={{ color: Theme.COLORS.WHITE }}>QUITAR</Text>
         </View>
       </View>
     );
@@ -105,20 +98,6 @@ const PrintOrderModal = ({
           <TouchableOpacity onPress={() => onClose()} style={styles.closeBtn}>
             <Icon name={'x'} color={Theme.COLORS.WHITE} size={20} />
           </TouchableOpacity>
-          <View style={styles.printerStatus}>
-            <Text style={{color: Theme.COLORS.WHITE}}>IMPRESORA: </Text>
-            <FontAwesome
-              name={'circle'}
-              color={currentPrinter ? Theme.COLORS.SUCCESS : Theme.COLORS.ERROR}
-              size={20}
-            />
-            <Text style={{color: Theme.COLORS.WHITE}}>
-              {currentPrinter ? ' ' + currentPrinter : ' NO CONECTADA '}
-            </Text>
-            {isLoading && (
-              <ActivityIndicator size={10} color={Theme.COLORS.WHITE} />
-            )}
-          </View>
           <Text style={styles.modalText}>IMPRIMIR COMANDA</Text>
           {productsToPrint ? (
             productsToPrint.length > 0 ? (
@@ -127,10 +106,10 @@ const PrintOrderModal = ({
                 renderItem={printItem}
                 keyExtractor={(item) => item.id.toString()}
                 ListHeaderComponent={ItemHeader}
-                style={{width: '50%', maxHeight: 400}}
+                style={{ width: '50%', maxHeight: 400 }}
               />
             ) : (
-              <Text style={{color: Theme.COLORS.WHITE}}>
+              <Text style={{ color: Theme.COLORS.WHITE }}>
                 NO HAY ELEMENTOS PARA IMPRIMIR
               </Text>
             )
@@ -145,7 +124,7 @@ const PrintOrderModal = ({
             <Button
               title={'Imprimir'}
               icon={'printer'}
-              disabled={!currentPrinter}
+              disabled={!printerState.printer}
               color={Theme.COLORS.SUCCESS}
               onPress={() => printRecipt()}
             />
