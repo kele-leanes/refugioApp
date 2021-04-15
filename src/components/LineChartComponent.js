@@ -1,11 +1,12 @@
-import React, {useState, useCallback} from 'react';
-import {LineChart} from 'react-native-chart-kit';
-import {Dimensions, StyleSheet, View} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
-import {Theme} from '../constants';
-import {db} from '../services/dbService';
+import React, { useState, useCallback } from 'react';
+import { LineChart } from 'react-native-chart-kit';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { Theme } from '../constants';
+import { db } from '../services/dbService';
+import moment from 'moment';
 
-function LineChartComponent() {
+export const LineChartComponent = ({ date }) => {
   const [chartData, setChartData] = useState({
     labels: [''],
     datasets: [
@@ -13,32 +14,44 @@ function LineChartComponent() {
         data: [0],
       },
     ],
-    legend: ['Facturación por mes'], // optional
+    legend: [moment(date).format('MMMM YYYY')],
   });
+
   const screenWidth = Dimensions.get('window').width;
 
   const fetchOrders = () => {
+    const formatedDate = moment(date).format('MM-YYYY');
     db.transaction((tx) => {
       tx.executeSql(
-        `SELECT SUM(order_total) AS total, strftime("%d-%m", datetime(order_date/1000, 'unixepoch')) as day FROM orders group by day`,
-        [],
+        'SELECT SUM(order_total) AS total, strftime("%d-%m", datetime(order_date/1000, \'unixepoch\')) as day FROM orders WHERE strftime("%m-%Y", datetime(order_date/1000, \'unixepoch\')) = ? group by day',
+        [formatedDate],
         (tx, results) => {
           var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push(results.rows.item(i));
+          if (results.rows.length) {
+            for (let i = 0; i < results.rows.length; ++i) {
+              temp.push(results.rows.item(i));
+            }
+            setChartData({
+              labels: temp.map((elem) => elem.day),
+              datasets: [
+                {
+                  data: temp.map((elem) => elem.total),
+                },
+              ],
+              legend: [moment(date).format('MMMM YYYY')],
+            });
+          } else {
+            setChartData({
+              labels: [''],
+              datasets: [
+                {
+                  data: [0],
+                },
+              ],
+              legend: [moment(date).format('MMMM YYYY')],
+            });
           }
-          console.log(temp);
-          setChartData({
-            ...chartData,
-            labels: temp.map((elem) => elem.day),
-            datasets: [
-              {
-                data: temp.map((elem) => elem.total),
-              },
-            ],
-          });
         },
-        (error) => console.log(error),
       );
     });
   };
@@ -46,15 +59,17 @@ function LineChartComponent() {
   const chartConfig = {
     backgroundGradientFromOpacity: 0,
     backgroundGradientToOpacity: 0,
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    color: (opacity = 1) => `rgba(78, 204, 163, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     barPercentage: 0.5,
     decimalPlaces: 0,
+    strokeWidth: 2,
   };
 
   useFocusEffect(
     useCallback(() => {
-      fetchOrders();
-    }, []),
+      fetchOrders(date);
+    }, [date]),
   );
 
   return (
@@ -62,13 +77,15 @@ function LineChartComponent() {
       <LineChart
         data={chartData}
         width={screenWidth - 50}
-        yAxisLabel="$"
-        height={220}
+        yAxisLabel={'$'}
+        height={300}
         chartConfig={chartConfig}
+        segments={6}
+        fromZero={true}
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   card: {
@@ -86,7 +103,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
-
-export default LineChartComponent;

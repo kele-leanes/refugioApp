@@ -1,9 +1,16 @@
-import React, {useState, useCallback} from 'react';
-import {useFocusEffect} from '@react-navigation/native';
-import {StyleSheet} from 'react-native';
-import {Table, Row, Rows, Col, Cols, Cell} from 'react-native-table-component';
-import {Theme} from '../constants';
-import {db} from '../services/dbService';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { StyleSheet } from 'react-native';
+import {
+  Table,
+  Row,
+  Rows,
+  Col,
+  Cols,
+  Cell,
+} from 'react-native-table-component';
+import { Theme } from '../constants';
+import { db } from '../services/dbService';
 
 const TableComponent = () => {
   const [tableHead, setTableHead] = useState([
@@ -37,7 +44,7 @@ const TableComponent = () => {
   };
 
   return (
-    <Table borderStyle={{borderWidth: 1, borderColor: Theme.COLORS.PRIMARY}}>
+    <Table borderStyle={{ borderWidth: 1, borderColor: Theme.COLORS.PRIMARY }}>
       <Row data={tableHead} style={styles.head} textStyle={styles.text} />
       <Rows data={tableData} style={styles.head} textStyle={styles.text} />
     </Table>
@@ -45,8 +52,8 @@ const TableComponent = () => {
 };
 
 const styles = StyleSheet.create({
-  head: {height: 40, backgroundColor: '#f1f8ff', width: '100%'},
-  text: {margin: 6},
+  head: { height: 40, backgroundColor: '#f1f8ff', width: '100%' },
+  text: { margin: 6 },
 });
 
 export default TableComponent;

@@ -5,7 +5,6 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Theme } from '../constants';
@@ -16,7 +15,6 @@ import moment from 'moment';
 import { db } from '../services/dbService';
 import Select from './Select';
 import { useOrientation } from '../services/useOrientation';
-import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
 
 function Ticket({
   orderProducts,
