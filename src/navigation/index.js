@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import SplashScreen from 'react-native-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -68,6 +69,10 @@ function SummaryStackScreen() {
 }
 
 export default function Navigation() {
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
+
   return (
     <PrintProvider>
       <NavigationContainer>
