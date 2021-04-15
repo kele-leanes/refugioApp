@@ -29,7 +29,7 @@ const PrintInvoiceModal = ({
 }) => {
   const [productsToPrint, setProductsToPrint] = useState([]);
   const [hasDisconunt, setHasDiscount] = useState(false);
-  const [discount, onChange] = useState(0);
+  const [discount, onChange] = useState('0');
   const [printerState] = usePrinter();
 
   const navigation = useNavigation();
