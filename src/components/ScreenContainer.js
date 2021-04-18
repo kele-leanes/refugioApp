@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,7 +8,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
 } from 'react-native';
-import {Theme} from '../constants';
+import { Theme } from '../constants';
 
 export default function ScreenContainer({
   children,
@@ -39,13 +39,13 @@ export default function ScreenContainer({
   const colorStyle = color && Theme.COLORS[color.toUpperCase()];
   const containerStyles = [
     styles.container,
-    color && {backgroundColor: colorStyle},
-    {justifyContent: position},
+    color && { backgroundColor: colorStyle },
+    { justifyContent: position },
   ];
   const subContainerStyles = [
     styles.subContainer,
-    {marginBottom: keyboard},
-    {...style},
+    { marginBottom: keyboard },
+    { ...style },
   ];
 
   return (

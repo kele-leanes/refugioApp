@@ -19,7 +19,7 @@ export const fetchOrders = (date) => {
   //   );
   db.transaction((tx) => {
     tx.executeSql(
-      'SELECT SUM(order_total) AS total, strftime("%d-%m", datetime(order_date/1000, \'unixepoch\')) as day FROM orders WHERE strftime("%m-%Y", datetime(order_date/1000, \'unixepoch\')) = ? group by day',
+      'SELECT SUM(order_total) AS total, strftime("%d-%m", datetime(order_date/1000, \'unixepoch\')) as day FROM orders WHERE strftime("%m-%Y", datetime(order_date/1000, \'unixepoch\')) = ? AND table_id IS NULL group by day',
       [formatedDate],
       (tx, results) => {
         var temp = [];

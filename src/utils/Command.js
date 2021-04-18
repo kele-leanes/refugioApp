@@ -49,4 +49,6 @@ export async function printCommand(items, data) {
   );
   await BluetoothEscposPrinter.printText(' \n\r', {});
   await BluetoothEscposPrinter.printText(' \n\r', {});
+  await BluetoothEscposPrinter.printText(' \n\r', {});
+  await BluetoothEscposPrinter.printText(' \n\r', {});
 }

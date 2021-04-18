@@ -167,13 +167,6 @@ const styles = StyleSheet.create({
     top: 25,
     position: 'absolute',
   },
-  printerStatus: {
-    left: 25,
-    top: 25,
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   inputStyle: {
     margin: 0,
     width: '100%',

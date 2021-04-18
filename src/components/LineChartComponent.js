@@ -6,7 +6,7 @@ import { Theme } from '../constants';
 import { db } from '../services/dbService';
 import moment from 'moment';
 
-export const LineChartComponent = ({ date }) => {
+export const LineChartComponent = ({ date, setTotal }) => {
   const [chartData, setChartData] = useState({
     labels: [''],
     datasets: [
@@ -23,7 +23,7 @@ export const LineChartComponent = ({ date }) => {
     const formatedDate = moment(date).format('MM-YYYY');
     db.transaction((tx) => {
       tx.executeSql(
-        'SELECT SUM(order_total) AS total, strftime("%d-%m", datetime(order_date/1000, \'unixepoch\')) as day FROM orders WHERE strftime("%m-%Y", datetime(order_date/1000, \'unixepoch\')) = ? group by day',
+        'SELECT SUM(order_total) AS total, strftime("%d-%m", datetime(order_date/1000, \'unixepoch\')) as day FROM orders WHERE strftime("%m-%Y", datetime(order_date/1000, \'unixepoch\')) = ? AND table_id IS NULL group by day',
         [formatedDate],
         (tx, results) => {
           var temp = [];
@@ -63,7 +63,6 @@ export const LineChartComponent = ({ date }) => {
     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     barPercentage: 0.5,
     decimalPlaces: 0,
-    strokeWidth: 2,
   };
 
   useFocusEffect(
@@ -80,8 +79,9 @@ export const LineChartComponent = ({ date }) => {
         yAxisLabel={'$'}
         height={300}
         chartConfig={chartConfig}
-        segments={6}
+        segments={4}
         fromZero={true}
+        onDataPointClick={({ value }) => setTotal(value)}
       />
     </View>
   );
